@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+venv/
+env/
+ENV/
+
+# Environment Variables
+.env
+.env.local
+*.env
+
+# Build outputs
+dist/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Databases & Logs
+*.db
+*.sqlite3
+*.log
+backend/uploads/
