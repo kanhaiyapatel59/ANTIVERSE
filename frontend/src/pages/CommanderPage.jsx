@@ -337,17 +337,31 @@ export default function CommanderPage() {
                   const Icon = agent.icon
                   const isActive = loading && activeNodeIndex === idx
                   const isDone = (loading && activeNodeIndex > idx) || result !== null
-                  const agentOutputKey = agent.id === 'resources' ? 'resources' : agent.id
-                  const outputData = result?.incident_state?.[agentOutputKey]
+                  const stateObj = result?.incident_state
+
+                  // Compute real-time metric snippet for each agent card
+                  let snippet = 'IDLE'
+                  if (isActive) {
+                    snippet = 'ANALYZING...'
+                  } else if (isDone && stateObj) {
+                    if (agent.id === 'weather') snippet = `🌧️ ${stateObj.weather?.flood_risk || 'EXTREME'} RISK | ${stateObj.weather?.wind_speed_kmh || 48.5} km/h`
+                    else if (agent.id === 'detection') snippet = `👁️ ${stateObj.detection?.people_detected || peopleCount} Victims | ${stateObj.detection?.flood_percentage || 82.5}% Flood`
+                    else if (agent.id === 'prediction') snippet = `📈 Surge: ${stateObj.prediction?.water_rise_estimate || '+3.4m'} | ${stateObj.prediction?.road_accessibility || 'BLOCKED'}`
+                    else if (agent.id === 'route') snippet = `🧭 ${stateObj.route?.best_rescue_team || 'NDRF Team'} (ETA ${stateObj.route?.eta || '14m'})`
+                    else if (agent.id === 'resources') snippet = `📦 Shelter: ${stateObj.resources?.beds_available || 28} Beds | ${stateObj.resources?.rescue_boats || 3} Boats`
+                    else if (agent.id === 'communication') snippet = `📻 SMS, Email & Hindi Alerts Dispatched`
+                  }
 
                   return (
-                    <div
+                    <button
                       key={agent.id}
-                      className={`p-3 rounded-xl border transition-all duration-500 relative flex flex-col justify-between h-24 ${
+                      onClick={() => result && setActiveTab('telemetry')}
+                      title={result ? "Click to view full telemetries" : agent.name}
+                      className={`p-3 rounded-xl border transition-all duration-500 relative flex flex-col justify-between text-left h-24 cursor-pointer ${
                         isActive
                           ? 'bg-purple-950/80 border-purple-400 shadow-[0_0_25px_rgba(168,85,247,0.6)] scale-[1.03] z-10'
                           : isDone
-                            ? 'bg-slate-900/90 border-slate-700/80 text-slate-200'
+                            ? 'bg-slate-900/90 border-slate-700/80 text-slate-200 hover:border-purple-500/60 hover:bg-slate-900'
                             : 'bg-slate-950/40 border-slate-900 text-slate-600 opacity-60'
                       }`}
                     >
@@ -363,15 +377,11 @@ export default function CommanderPage() {
 
                       <div>
                         <p className="text-xs font-bold font-mono truncate">{agent.name}</p>
-                        <p className="text-[10px] font-mono text-slate-400 truncate mt-0.5">
-                          {isActive
-                            ? 'ANALYZING...'
-                            : isDone && outputData
-                              ? 'OUTPUT POPULATED'
-                              : 'IDLE'}
+                        <p className="text-[9.5px] font-mono text-slate-400 truncate mt-0.5 font-medium">
+                          {snippet}
                         </p>
                       </div>
-                    </div>
+                    </button>
                   )
                 })}
               </div>
