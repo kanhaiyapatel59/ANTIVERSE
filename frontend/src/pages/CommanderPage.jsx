@@ -30,6 +30,10 @@ import RiskRadarChart from '../components/RiskRadarChart'
 import BenchmarkHUD from '../components/BenchmarkHUD'
 import IncidentReplayModal from '../components/IncidentReplayModal'
 import FinancialDamageCard from '../components/FinancialDamageCard'
+import WeatherForecastChart from '../components/WeatherForecastChart'
+import DetectionDonutChart from '../components/DetectionDonutChart'
+import ResourceInventoryChart from '../components/ResourceInventoryChart'
+import RouteFlowChart from '../components/RouteFlowChart'
 
 export default function CommanderPage() {
   const { sidebarOpen } = useSidebar()
@@ -628,192 +632,237 @@ export default function CommanderPage() {
                   </motion.div>
                 )}
 
-                {/* ALL 6 AGENT TELEMETRIES TAB */}
+                {/* ALL 6 AGENT TELEMETRIES & VISUAL CHARTS TAB */}
                 {activeTab === 'telemetry' && (
                   <motion.div
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-xs"
+                    className="space-y-6 font-mono text-xs"
                   >
-                    {/* AGENT 01: WEATHER */}
-                    <div className="glass-panel p-5 rounded-2xl border border-blue-500/40 bg-blue-950/20 space-y-3 shadow-md">
-                      <div className="flex items-center justify-between border-b border-blue-500/30 pb-2.5">
-                        <div className="flex items-center space-x-2">
-                          <CloudRain className="w-4 h-4 text-blue-400" />
-                          <h4 className="font-bold text-blue-300 uppercase tracking-wide">Agent 01: Weather Telemetry</h4>
-                        </div>
-                        <span className="px-2 py-0.5 text-[9px] font-bold rounded-md bg-blue-500/20 border border-blue-400/40 text-blue-300">
-                          {result.incident_state?.weather?.flood_risk || "EXTREME"} RISK
-                        </span>
+                    <div className="flex items-center justify-between border-b border-purple-500/30 pb-3">
+                      <div className="flex items-center space-x-2">
+                        <Layers className="w-5 h-5 text-purple-400 animate-pulse" />
+                        <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wide">
+                          Unified 6-Agent Command Dashboard — Telemetries & Visual Charts
+                        </h3>
                       </div>
-                      <div className="grid grid-cols-2 gap-2 text-[11px]">
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                          <span className="text-slate-500 text-[9px] block">PRECIPITATION</span>
-                          <span className="text-slate-200 font-bold">{result.incident_state?.weather?.rainfall || "142mm/hr Heavy"}</span>
-                        </div>
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                          <span className="text-slate-500 text-[9px] block">WIND SPEED</span>
-                          <span className="text-slate-200 font-bold">{result.incident_state?.weather?.wind_speed_kmh || 48.5} km/h</span>
-                        </div>
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                          <span className="text-slate-500 text-[9px] block">STORM SURGE INDEX</span>
-                          <span className="text-amber-400 font-bold">{result.incident_state?.weather?.storm_surge_index || 8.4} / 10</span>
-                        </div>
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                          <span className="text-slate-500 text-[9px] block">LANDSLIDE RISK</span>
-                          <span className="text-rose-400 font-bold">{result.incident_state?.weather?.landslide_vulnerability || "HIGH"}</span>
-                        </div>
-                      </div>
-                      <p className="text-[10px] text-slate-400 leading-relaxed bg-slate-950/60 p-2 rounded-lg border border-slate-900">
-                        Forecast: {result.incident_state?.weather?.weather_forecast || "Continuous heavy cloudburst precipitation advisory."}
-                      </p>
+                      <span className="px-3 py-1 text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded-full font-bold">
+                        ALL 6 AGENTS LIVE VISUALIZED
+                      </span>
                     </div>
 
-                    {/* AGENT 02: AERIAL DETECTION */}
-                    <div className="glass-panel p-5 rounded-2xl border border-cyan-500/40 bg-cyan-950/20 space-y-3 shadow-md">
-                      <div className="flex items-center justify-between border-b border-cyan-500/30 pb-2.5">
-                        <div className="flex items-center space-x-2">
-                          <Eye className="w-4 h-4 text-cyan-400" />
-                          <h4 className="font-bold text-cyan-300 uppercase tracking-wide">Agent 02: Aerial Recon & Detection</h4>
-                        </div>
-                        <span className="px-2 py-0.5 text-[9px] font-bold rounded-md bg-cyan-500/20 border border-cyan-400/40 text-cyan-300">
-                          {((result.incident_state?.detection?.confidence || 0.96) * 100).toFixed(0)}% CONFIDENCE
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-[11px]">
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                          <span className="text-slate-500 text-[9px] block">HUMANS STRANDED</span>
-                          <span className="text-cyan-300 font-bold text-sm">{result.incident_state?.detection?.people_detected || peopleCount} Victims</span>
-                        </div>
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                          <span className="text-slate-500 text-[9px] block">ANIMALS DETECTED</span>
-                          <span className="text-cyan-300 font-bold text-sm">{result.incident_state?.detection?.animals_detected || 2} Livestock</span>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-[10px]">
-                          <span className="text-slate-400">Flood Inundation Coverage:</span>
-                          <span className="text-cyan-300 font-bold">{result.incident_state?.detection?.flood_percentage || 82.5}%</span>
-                        </div>
-                        <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
-                          <div className="h-full bg-cyan-500 rounded-full" style={{ width: `${result.incident_state?.detection?.flood_percentage || 82.5}%` }}></div>
-                        </div>
-                      </div>
-                      <p className="text-[10px] text-slate-400 leading-relaxed bg-slate-950/60 p-2 rounded-lg border border-slate-900">
-                        Damage Rating: <span className="text-rose-400 font-bold">{result.incident_state?.detection?.building_damage || "CRITICAL STRUCTURAL SHIFT"}</span>
-                      </p>
-                    </div>
-
-                    {/* AGENT 03: HYDRO PREDICTION */}
-                    <div className="glass-panel p-5 rounded-2xl border border-amber-500/40 bg-amber-950/20 space-y-3 shadow-md">
-                      <div className="flex items-center justify-between border-b border-amber-500/30 pb-2.5">
-                        <div className="flex items-center space-x-2">
-                          <TrendingUp className="w-4 h-4 text-amber-400" />
-                          <h4 className="font-bold text-amber-300 uppercase tracking-wide">Agent 03: Hydro-Dynamic Prediction</h4>
-                        </div>
-                        <span className="px-2 py-0.5 text-[9px] font-bold rounded-md bg-amber-500/20 border border-amber-400/40 text-amber-300">
-                          URGENCY: {result.incident_state?.prediction?.urgency || "IMMEDIATE EVACUATION"}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-[11px]">
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                          <span className="text-slate-500 text-[9px] block">WATER RISE ESTIMATE</span>
-                          <span className="text-amber-300 font-bold">{result.incident_state?.prediction?.water_rise_estimate || "+3.4m in 3h"}</span>
-                        </div>
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                          <span className="text-slate-500 text-[9px] block">SURGE VELOCITY</span>
-                          <span className="text-amber-300 font-bold">{result.incident_state?.prediction?.surge_velocity_ms || 3.81} m/s</span>
-                        </div>
-                      </div>
-                      <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-900 space-y-1 text-[10px]">
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Road Accessibility:</span>
-                          <span className={`font-bold ${result.incident_state?.prediction?.road_accessibility === 'BLOCKED' ? 'text-rose-400' : 'text-emerald-400'}`}>
-                            ⛔ {result.incident_state?.prediction?.road_accessibility || "BLOCKED"}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* AGENT 01: WEATHER TELEMETRY & 24-HOUR TREND CHART */}
+                      <div className="glass-panel p-5 rounded-2xl border border-blue-500/40 bg-blue-950/20 space-y-4 shadow-md">
+                        <div className="flex items-center justify-between border-b border-blue-500/30 pb-2.5">
+                          <div className="flex items-center space-x-2">
+                            <CloudRain className="w-5 h-5 text-blue-400" />
+                            <h4 className="font-bold text-blue-300 text-sm uppercase tracking-wide">Agent 01: Weather Telemetry</h4>
+                          </div>
+                          <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-md bg-blue-500/20 border border-blue-400/40 text-blue-300">
+                            {result.incident_state?.weather?.flood_risk || "EXTREME"} RISK
                           </span>
                         </div>
-                        <p className="text-slate-400 pt-0.5">Secondary Hazards: {result.incident_state?.prediction?.secondary_hazards || "Power grid failure risk"}</p>
-                      </div>
-                    </div>
 
-                    {/* AGENT 04: ROUTE NAVIGATOR */}
-                    <div className="glass-panel p-5 rounded-2xl border border-emerald-500/40 bg-emerald-950/20 space-y-3 shadow-md">
-                      <div className="flex items-center justify-between border-b border-emerald-500/30 pb-2.5">
-                        <div className="flex items-center space-x-2">
-                          <Navigation className="w-4 h-4 text-emerald-400" />
-                          <h4 className="font-bold text-emerald-300 uppercase tracking-wide">Agent 04: Tactical Route Navigator</h4>
-                        </div>
-                        <span className="px-2 py-0.5 text-[9px] font-bold rounded-md bg-emerald-500/20 border border-emerald-400/40 text-emerald-300">
-                          ETA: {result.incident_state?.route?.eta || result.incident_state?.route?.eta_minutes || "14 mins"}
-                        </span>
-                      </div>
-                      <div className="space-y-2 text-[11px]">
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                          <span className="text-slate-500 text-[9px] block">ASSIGNED RESCUE FORCE</span>
-                          <span className="text-emerald-300 font-bold">{result.incident_state?.route?.best_rescue_team || "NDRF Battalion 8"}</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-[10px]">
-                          <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-900">
-                            <span className="text-slate-500 block">PRIMARY ROUTE</span>
-                            <span className="text-slate-300 font-medium">{result.incident_state?.route?.tactical_route || "High-Ground Bypass"}</span>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">PRECIPITATION</span>
+                            <span className="text-blue-300 font-bold">{result.incident_state?.weather?.rainfall || "142mm/hr Heavy"}</span>
                           </div>
-                          <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-900">
-                            <span className="text-slate-500 block">FAILOVER BYPASS</span>
-                            <span className="text-slate-300 font-medium">{result.incident_state?.route?.failover_route || "Helicopter Drop Zone B"}</span>
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">WIND SPEED</span>
+                            <span className="text-blue-300 font-bold">{result.incident_state?.weather?.wind_speed_kmh || 48.5} km/h</span>
+                          </div>
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">SURGE INDEX</span>
+                            <span className="text-amber-400 font-bold">{result.incident_state?.weather?.storm_surge_index || 8.4} / 10</span>
+                          </div>
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">LANDSLIDE RISK</span>
+                            <span className="text-rose-400 font-bold">{result.incident_state?.weather?.landslide_vulnerability || "HIGH"}</span>
                           </div>
                         </div>
-                      </div>
-                    </div>
 
-                    {/* AGENT 05: RESOURCE LOGISTICS */}
-                    <div className="glass-panel p-5 rounded-2xl border border-purple-500/40 bg-purple-950/20 space-y-3 shadow-md">
-                      <div className="flex items-center justify-between border-b border-purple-500/30 pb-2.5">
-                        <div className="flex items-center space-x-2">
-                          <Boxes className="w-4 h-4 text-purple-400" />
-                          <h4 className="font-bold text-purple-300 uppercase tracking-wide">Agent 05: Resource & Shelter Logistics</h4>
-                        </div>
-                        <span className="px-2 py-0.5 text-[9px] font-bold rounded-md bg-purple-500/20 border border-purple-400/40 text-purple-300">
-                          SHELTER READY
-                        </span>
+                        {/* Weather 24-Hour Interactive Chart */}
+                        <WeatherForecastChart rainfallMm={parseFloat(result.incident_state?.weather?.rainfall) || 142} />
                       </div>
-                      <p className="text-[11px] font-bold text-purple-200">
-                        🏢 {result.incident_state?.resources?.nearest_shelter || result.incident_state?.resource?.nearest_shelter || "St. Xavier Emergency Relief Camp"}
-                      </p>
-                      <div className="grid grid-cols-3 gap-2 text-[10px]">
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800 text-center">
-                          <span className="text-slate-500 text-[9px] block">BEDS AVAILABLE</span>
-                          <span className="text-purple-300 font-bold text-xs">{result.incident_state?.resources?.beds_available || result.incident_state?.resource?.beds_available || 28}</span>
-                        </div>
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800 text-center">
-                          <span className="text-slate-500 text-[9px] block">WATER (L)</span>
-                          <span className="text-purple-300 font-bold text-xs">{result.incident_state?.resources?.drinking_water_liters || result.incident_state?.resource?.water_allocated_liters || peopleCount * 12} L</span>
-                        </div>
-                        <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800 text-center">
-                          <span className="text-slate-500 text-[9px] block">RESCUE BOATS</span>
-                          <span className="text-purple-300 font-bold text-xs">{result.incident_state?.resources?.rescue_boats || 3} Deployed</span>
-                        </div>
-                      </div>
-                    </div>
 
-                    {/* AGENT 06: COMMUNICATIONS DISPATCH */}
-                    <div className="glass-panel p-5 rounded-2xl border border-rose-500/40 bg-rose-950/20 space-y-3 shadow-md">
-                      <div className="flex items-center justify-between border-b border-rose-500/30 pb-2.5">
-                        <div className="flex items-center space-x-2">
-                          <Radio className="w-4 h-4 text-rose-400" />
-                          <h4 className="font-bold text-rose-300 uppercase tracking-wide">Agent 06: Multi-Channel Communication</h4>
+                      {/* AGENT 02: AERIAL RECON & VISION OBJECT CLASSIFICATION */}
+                      <div className="glass-panel p-5 rounded-2xl border border-cyan-500/40 bg-cyan-950/20 space-y-4 shadow-md">
+                        <div className="flex items-center justify-between border-b border-cyan-500/30 pb-2.5">
+                          <div className="flex items-center space-x-2">
+                            <Eye className="w-5 h-5 text-cyan-400" />
+                            <h4 className="font-bold text-cyan-300 text-sm uppercase tracking-wide">Agent 02: Aerial Recon & Vision Detection</h4>
+                          </div>
+                          <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-md bg-cyan-500/20 border border-cyan-400/40 text-cyan-300">
+                            {((result.incident_state?.detection?.confidence || 0.96) * 100).toFixed(0)}% CONFIDENCE
+                          </span>
                         </div>
-                        <span className="px-2 py-0.5 text-[9px] font-bold rounded-md bg-rose-500/20 border border-rose-400/40 text-rose-300">
-                          ALL CHANNELS LIVE
-                        </span>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">STRANDED HUMANS</span>
+                            <span className="text-cyan-300 font-bold text-xs">{result.incident_state?.detection?.people_detected || peopleCount} Victims</span>
+                          </div>
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">LIVESTOCK</span>
+                            <span className="text-cyan-300 font-bold text-xs">{result.incident_state?.detection?.animals_detected || 2} Animals</span>
+                          </div>
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">INUNDATED AREA</span>
+                            <span className="text-cyan-300 font-bold text-xs">{result.incident_state?.detection?.flood_percentage || 82.5}%</span>
+                          </div>
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">DAMAGE SHIFT</span>
+                            <span className="text-rose-400 font-bold text-[10px] truncate block">{result.incident_state?.detection?.building_damage || "CRITICAL"}</span>
+                          </div>
+                        </div>
+
+                        {/* Vision Classification Donut Chart */}
+                        <DetectionDonutChart 
+                          humans={result.incident_state?.detection?.people_detected || peopleCount} 
+                          animals={result.incident_state?.detection?.animals_detected || 2}
+                          floodPct={result.incident_state?.detection?.flood_percentage || 82.5}
+                        />
                       </div>
-                      <div className="space-y-2 text-[10px]">
-                        <div className="bg-slate-950/80 p-2 rounded-lg border border-slate-800">
-                          <span className="text-rose-400 font-bold block mb-0.5">📱 SMS ADVISORY PREVIEW</span>
-                          <p className="text-slate-300 line-clamp-2">{result.incident_state?.communication?.sms_alert || `🚨 EMERGENCY: Evacuate immediately in ${location}!`}</p>
+
+                      {/* AGENT 03: HYDRO-DYNAMIC PREDICTION & RADAR CHART */}
+                      <div className="glass-panel p-5 rounded-2xl border border-amber-500/40 bg-amber-950/20 space-y-4 shadow-md">
+                        <div className="flex items-center justify-between border-b border-amber-500/30 pb-2.5">
+                          <div className="flex items-center space-x-2">
+                            <TrendingUp className="w-5 h-5 text-amber-400" />
+                            <h4 className="font-bold text-amber-300 text-sm uppercase tracking-wide">Agent 03: Hydro-Dynamic Prediction</h4>
+                          </div>
+                          <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-md bg-amber-500/20 border border-amber-400/40 text-amber-300">
+                            URGENCY: {result.incident_state?.prediction?.urgency || "IMMEDIATE EVACUATION"}
+                          </span>
                         </div>
-                        <div className="bg-slate-950/80 p-2 rounded-lg border border-slate-800">
-                          <span className="text-rose-400 font-bold block mb-0.5">🇮🇳 HINDI REGIONAL ALERT</span>
-                          <p className="text-slate-300 line-clamp-2">{result.incident_state?.communication?.hindi_alert || `🚨 आपातकालीन चेतावनी: बाढ़ प्रभाव क्षेत्र खाली करें!`}</p>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">WATER RISE</span>
+                            <span className="text-amber-300 font-bold">{result.incident_state?.prediction?.water_rise_estimate || "+3.4m in 3h"}</span>
+                          </div>
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">SURGE VELOCITY</span>
+                            <span className="text-amber-300 font-bold">{result.incident_state?.prediction?.surge_velocity_ms || 3.81} m/s</span>
+                          </div>
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">ROAD ACCESS</span>
+                            <span className="text-rose-400 font-bold">⛔ {result.incident_state?.prediction?.road_accessibility || "BLOCKED"}</span>
+                          </div>
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">PEAK TIME</span>
+                            <span className="text-amber-300 font-bold">2.5 Hours</span>
+                          </div>
+                        </div>
+
+                        {/* Hydro Risk Radar Chart */}
+                        <RiskRadarChart 
+                          peopleCount={peopleCount} 
+                          floodPct={result.incident_state?.detection?.flood_percentage || 82.5}
+                          windSpeed={result.incident_state?.weather?.wind_speed_kmh || 48.5}
+                          roadStatus={result.incident_state?.prediction?.road_accessibility || "BLOCKED"}
+                        />
+                      </div>
+
+                      {/* AGENT 04: TACTICAL ROUTE NAVIGATOR & TRANSIT FLOW CHART */}
+                      <div className="glass-panel p-5 rounded-2xl border border-emerald-500/40 bg-emerald-950/20 space-y-4 shadow-md">
+                        <div className="flex items-center justify-between border-b border-emerald-500/30 pb-2.5">
+                          <div className="flex items-center space-x-2">
+                            <Navigation className="w-5 h-5 text-emerald-400" />
+                            <h4 className="font-bold text-emerald-300 text-sm uppercase tracking-wide">Agent 04: Tactical Route Navigator</h4>
+                          </div>
+                          <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-md bg-emerald-500/20 border border-emerald-400/40 text-emerald-300">
+                            ETA: {result.incident_state?.route?.eta || result.incident_state?.route?.eta_minutes || "14 mins"}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 text-[11px]">
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">PRIMARY TACTICAL CORRIDOR</span>
+                            <span className="text-emerald-300 font-bold">{result.incident_state?.route?.tactical_route || "High-Ground Bypass Corridor"}</span>
+                          </div>
+                          <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                            <span className="text-slate-500 text-[9px] block">FAILOVER EVACUATION ROUTE</span>
+                            <span className="text-slate-300 font-bold">{result.incident_state?.route?.failover_route || "Airborne Helicopter Drop Zone B"}</span>
+                          </div>
+                        </div>
+
+                        {/* Tactical Waypoint Transit Flow Chart */}
+                        <RouteFlowChart 
+                          rescueTeam={result.incident_state?.route?.best_rescue_team || "NDRF Battalion 8 - Alpha Rapid Force"}
+                          eta={result.incident_state?.route?.eta || result.incident_state?.route?.eta_minutes || "14 mins"}
+                          corridor={result.incident_state?.route?.tactical_route || "High-Ground Bypass Corridor"}
+                        />
+                      </div>
+
+                      {/* AGENT 05: RESOURCE LOGISTICS & INVENTORY ALLOCATION BAR CHART */}
+                      <div className="glass-panel p-5 rounded-2xl border border-purple-500/40 bg-purple-950/20 space-y-4 shadow-md">
+                        <div className="flex items-center justify-between border-b border-purple-500/30 pb-2.5">
+                          <div className="flex items-center space-x-2">
+                            <Boxes className="w-5 h-5 text-purple-400" />
+                            <h4 className="font-bold text-purple-300 text-sm uppercase tracking-wide">Agent 05: Resource & Shelter Logistics</h4>
+                          </div>
+                          <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-md bg-purple-500/20 border border-purple-400/40 text-purple-300">
+                            SHELTER ALLOCATED
+                          </span>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-purple-950/50 border border-purple-500/30 flex items-center justify-between">
+                          <div>
+                            <span className="text-[10px] text-slate-400 uppercase block">Relief Camp Facility</span>
+                            <strong className="text-xs text-purple-200 font-bold">{result.incident_state?.resources?.nearest_shelter || result.incident_state?.resource?.nearest_shelter || "St. Xavier Emergency Relief Camp"}</strong>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[10px] text-slate-400 uppercase block">Available Beds</span>
+                            <span className="text-xs font-bold text-purple-300">{result.incident_state?.resources?.beds_available || result.incident_state?.resource?.beds_available || 28} Beds</span>
+                          </div>
+                        </div>
+
+                        {/* Resource Allocation Inventory Bar Chart */}
+                        <ResourceInventoryChart peopleCount={peopleCount} />
+                      </div>
+
+                      {/* AGENT 06: MULTI-CHANNEL EMERGENCY COMMUNICATION DISPATCH CONSOLE */}
+                      <div className="glass-panel p-5 rounded-2xl border border-rose-500/40 bg-rose-950/20 space-y-4 shadow-md">
+                        <div className="flex items-center justify-between border-b border-rose-500/30 pb-2.5">
+                          <div className="flex items-center space-x-2">
+                            <Radio className="w-5 h-5 text-rose-400 animate-pulse" />
+                            <h4 className="font-bold text-rose-300 text-sm uppercase tracking-wide">Agent 06: Multi-Channel Communication</h4>
+                          </div>
+                          <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-md bg-rose-500/20 border border-rose-400/40 text-rose-300">
+                            DISPATCH ACTIVE
+                          </span>
+                        </div>
+
+                        <div className="space-y-3 text-[11px]">
+                          <div className="bg-slate-950/90 p-3 rounded-xl border border-slate-800 space-y-1">
+                            <div className="flex items-center justify-between text-[10px] text-rose-400 font-bold">
+                              <span>📱 SMS EMERGENCY BROADCAST</span>
+                              <span className="text-emerald-400">DISPATCHED</span>
+                            </div>
+                            <p className="text-slate-200 font-sans leading-relaxed">{result.incident_state?.communication?.sms_alert || `🚨 EMERGENCY ADVISORY: Flash flood active in ${location}. Evacuate immediately!`}</p>
+                          </div>
+
+                          <div className="bg-slate-950/90 p-3 rounded-xl border border-slate-800 space-y-1">
+                            <div className="flex items-center justify-between text-[10px] text-amber-400 font-bold">
+                              <span>🇮🇳 HINDI REGIONAL ADVISORY</span>
+                              <span className="text-emerald-400">DISPATCHED</span>
+                            </div>
+                            <p className="text-slate-200 font-sans leading-relaxed">{result.incident_state?.communication?.hindi_alert || `🚨 आपातकालीन चेतावनी: ${location} में भारी बाढ़! तुरंत सुरक्षित स्थान पर पहुंचे।`}</p>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2 text-[10px]">
+                            <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+                              <span className="text-slate-400 block">AUTHORITY BRIEF</span>
+                              <strong className="text-slate-200 block truncate">NDRF HQ Official PDF</strong>
+                            </div>
+                            <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+                              <span className="text-slate-400 block">CAP v1.2 XML FEED</span>
+                              <strong className="text-emerald-400 block font-mono">AUTHENTICATED</strong>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
