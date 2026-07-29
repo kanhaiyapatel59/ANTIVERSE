@@ -324,34 +324,69 @@ function CameraTimelineController({ onPhaseChange, isReplaying }) {
   return null;
 }
 
+// React Error Boundary for 3D WebGL Canvas
+class CanvasErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error) {
+    console.warn('⚠️ 3D WebGL Canvas Context Lost or Error caught:', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="fixed inset-0 w-full h-full bg-gradient-to-b from-[#030611] via-[#050c1e] to-[#030611] pointer-events-none z-0" />
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function CinematicCanvas({ onPhaseChange, isReplaying }) {
   return (
-    <div className="fixed inset-0 w-full h-full pointer-events-none z-0">
-      <Canvas
-        camera={{ position: [0, 0.3, 6.0], fov: 45 }}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        className="w-full h-full"
-      >
-        {/* Lighting for Dark Earth */}
-        <ambientLight intensity={0.28} />
-        <directionalLight position={[12, 10, 10]} intensity={2.0} color="#ffffff" />
-        <pointLight position={[-15, 5, -20]} intensity={1.2} color="#ffaa00" />
-        <pointLight position={[0, -10, 10]} intensity={0.6} color="#00f2fe" />
+    <CanvasErrorBoundary>
+      <div className="fixed inset-0 w-full h-full pointer-events-none z-0">
+        <Canvas
+          camera={{ position: [0, 0.3, 6.0], fov: 45 }}
+          gl={{ antialias: true, alpha: true, powerPreference: "default", failIfMajorPerformanceCaveat: false }}
+          onCreated={({ gl }) => {
+            const canvasEl = gl.domElement;
+            const handleContextLost = (event) => {
+              event.preventDefault();
+              console.warn("⚠️ WebGL context lost captured. Gracefully preventing crash...");
+            };
+            canvasEl.addEventListener("webglcontextlost", handleContextLost, false);
+          }}
+          className="w-full h-full"
+        >
+          {/* Lighting for Dark Earth */}
+          <ambientLight intensity={0.28} />
+          <directionalLight position={[12, 10, 10]} intensity={2.0} color="#ffffff" />
+          <pointLight position={[-15, 5, -20]} intensity={1.2} color="#ffaa00" />
+          <pointLight position={[0, -10, 10]} intensity={0.6} color="#00f2fe" />
 
-        {/* Scene Components */}
-        <Stars radius={150} depth={60} count={7000} factor={4} saturation={0.5} fade speed={1.8} />
-        <SpeedParticles count={500} />
-        <Float speed={1.8} rotationIntensity={0.2} floatIntensity={0.4}>
-          <EarthGlobe />
-        </Float>
+          {/* Scene Components */}
+          <Stars radius={150} depth={60} count={7000} factor={4} saturation={0.5} fade speed={1.8} />
+          <SpeedParticles count={500} />
+          <Float speed={1.8} rotationIntensity={0.2} floatIntensity={0.4}>
+            <EarthGlobe />
+          </Float>
 
-        {/* Camera Controller */}
-        <CameraTimelineController
-          key={isReplaying ? Date.now() : 'initial'}
-          isReplaying={isReplaying}
-          onPhaseChange={onPhaseChange}
-        />
-      </Canvas>
-    </div>
+          {/* Camera Controller */}
+          <CameraTimelineController
+            key={isReplaying ? Date.now() : 'initial'}
+            isReplaying={isReplaying}
+            onPhaseChange={onPhaseChange}
+          />
+        </Canvas>
+      </div>
+    </CanvasErrorBoundary>
   );
 }
