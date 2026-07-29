@@ -22,6 +22,7 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
   const [showAlertsDrawer, setShowAlertsDrawer] = useState(false)
   const [showThemeDropdown, setShowThemeDropdown] = useState(false)
   const [showRoleDropdown, setShowRoleDropdown] = useState(false)
+  const [isAutonomousActive, setIsAutonomousActive] = useState(false)
   const [isListeningVoice, setIsListeningVoice] = useState(false)
   const [voiceLog, setVoiceLog] = useState('')
   const { role: currentRole, setRole } = useAuth()
@@ -259,6 +260,34 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
           )}
         </div>
         
+        {/* AUTONOMOUS BACKGROUND AGENT MONITOR BUTTON */}
+        <button
+          onClick={async () => {
+            try {
+              if (isAutonomousActive) {
+                await axios.post('/api/v1/autonomous/stop');
+                setIsAutonomousActive(false);
+              } else {
+                await axios.post('/api/v1/autonomous/start');
+                setIsAutonomousActive(true);
+              }
+            } catch (e) {
+              console.error(e);
+            }
+          }}
+          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border transition-all cursor-pointer font-sans text-xs font-bold ${
+            isAutonomousActive 
+              ? 'bg-rose-950/80 border-rose-500 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.4)] animate-pulse'
+              : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+          }`}
+          title="Toggle Autonomous Event Monitoring & Self-Triggering Loop"
+        >
+          <Zap className={`w-3.5 h-3.5 ${isAutonomousActive ? 'text-rose-400 animate-spin' : 'text-slate-500'}`} />
+          <span className="font-mono text-[11px] uppercase">
+            {isAutonomousActive ? '🤖 AUTONOMOUS ACTIVE' : '🤖 START AUTONOMOUS'}
+          </span>
+        </button>
+
         {/* VOICE COMMAND CONTROLLER MIC BUTTON */}
         <button
           onClick={() => {

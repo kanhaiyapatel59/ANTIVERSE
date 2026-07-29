@@ -276,6 +276,58 @@ async def auto_send_whatsapp_group(payload: WhatsAppSendRequest):
     res = await send_whatsapp_group_message(payload.group_name, payload.message)
     return res
 
+# --- WEBSOCKET REAL-TIME TELEMETRY STREAM & AUTONOMOUS AGENT ENDPOINTS ---
+from fastapi import WebSocket, WebSocketDisconnect
+from agents.autonomous_monitor import autonomous_monitor_instance
+
+active_websockets: List[WebSocket] = []
+
+@app.websocket("/ws/telemetry")
+async def websocket_telemetry_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    active_websockets.append(websocket)
+    try:
+        await websocket.send_json({
+            "event": "CONNECTED",
+            "message": "Connected to AI Disaster Command Center Real-Time Telemetry Stream",
+            "status": "ONLINE"
+        })
+        while True:
+            data = await websocket.receive_text()
+            # Echo heartbeat
+            await websocket.send_json({"event": "HEARTBEAT", "received": data})
+    except WebSocketDisconnect:
+        active_websockets.remove(websocket)
+    except Exception as e:
+        if websocket in active_websockets:
+            active_websockets.remove(websocket)
+
+async def broadcast_ws_event(event_data: dict):
+    for ws in active_websockets:
+        try:
+            await ws.send_json(event_data)
+        except Exception:
+            pass
+
+@app.post("/api/v1/autonomous/start")
+async def start_autonomous_monitoring():
+    if not autonomous_monitor_instance.is_running:
+        import asyncio
+        asyncio.create_task(autonomous_monitor_instance.start_autonomous_loop(callback=broadcast_ws_event))
+    return {"status": "success", "message": "Autonomous Background Disaster Monitoring Loop Started"}
+
+@app.post("/api/v1/autonomous/stop")
+async def stop_autonomous_monitoring():
+    autonomous_monitor_instance.stop()
+    return {"status": "success", "message": "Autonomous Monitoring Stopped"}
+
+@app.get("/api/v1/autonomous/status")
+async def get_autonomous_status():
+    return {
+        "is_running": autonomous_monitor_instance.is_running,
+        "logs": autonomous_monitor_instance.sensor_logs[-10:]
+    }
+
 
 if __name__ == "__main__":
     import uvicorn

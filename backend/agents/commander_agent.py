@@ -23,6 +23,7 @@ from agents.communication_agent import run_communication_agent
 
 from prompts.commander_prompts import COMMANDER_SYSTEM_PROMPT, build_commander_prompt
 from database.db import get_db_connection, log_activity
+from tools.safety_validator import validate_and_self_correct_plan
 from langchain_groq import ChatGroq
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -127,6 +128,11 @@ async def communication_node(state: GraphState) -> Dict[str, Any]:
 async def synthesis_node(state: GraphState) -> Dict[str, Any]:
     inc_id = state["incident_id"]
     loc = state["location"]
+
+    # Autonomous Self-Correction & Safety Rule Validation Step
+    corrected_state = validate_and_self_correct_plan(dict(state))
+    for log in corrected_state.get("self_correction_logs", []):
+        state["logs"].append(log)
 
     master_plan = ""
 
