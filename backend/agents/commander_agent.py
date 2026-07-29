@@ -256,3 +256,6 @@ async def run_commander_agent(location: str, image_url: str = "rooftop_flooding"
 
     final_state = await COMMANDER_GRAPH.ainvoke(initial_state)
     return final_state
+
+run_commander_pipeline = run_commander_agent
+

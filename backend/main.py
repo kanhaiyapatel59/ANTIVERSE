@@ -1,5 +1,11 @@
+"""
+AI Disaster Command Center - Backend API Server
+Multi-Agent Emergency Response & Incident Orchestration Platform.
+"""
+
 import os
 import uuid
+from typing import List, Dict, Any
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles

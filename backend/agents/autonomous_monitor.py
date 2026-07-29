@@ -2,7 +2,7 @@ import asyncio
 import time
 import random
 from typing import Dict, Any
-from agents.commander_agent import run_commander_pipeline
+from agents.commander_agent import run_commander_agent
 
 class AutonomousDisasterMonitor:
     """
@@ -43,7 +43,7 @@ class AutonomousDisasterMonitor:
 
                 # Autonomously execute master commander pipeline
                 try:
-                    result = await run_commander_pipeline(
+                    result = await run_commander_agent(
                         location=reading["sector"],
                         image_url="rooftop_flooding",
                         people_count=14
