@@ -24,10 +24,12 @@ import {
 } from 'lucide-react'
 import axios from 'axios'
 import { exportIncidentPDF } from '../utils/pdfExporter'
+import { exportNDMADebriefPDF } from '../utils/ndmaPdfExporter'
 import GISMap from '../components/GISMap'
 import RiskRadarChart from '../components/RiskRadarChart'
 import BenchmarkHUD from '../components/BenchmarkHUD'
 import IncidentReplayModal from '../components/IncidentReplayModal'
+import FinancialDamageCard from '../components/FinancialDamageCard'
 
 export default function CommanderPage() {
   const { sidebarOpen } = useSidebar()
@@ -356,12 +358,18 @@ export default function CommanderPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2 flex-wrap gap-2">
                     <button
                       onClick={() => setShowReplayModal(true)}
                       className="px-3 py-1.5 rounded-lg bg-purple-950 border border-purple-500 text-purple-300 hover:bg-purple-900 font-mono text-xs font-bold shadow-md flex items-center space-x-1.5 transition-all"
                     >
                       <span>📼 Open Black Box Replay</span>
+                    </button>
+                    <button
+                      onClick={() => exportNDMADebriefPDF(result?.incident_state || {}, result?.master_plan)}
+                      className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white font-mono text-xs font-bold shadow-[0_0_15px_rgba(245,158,11,0.4)] flex items-center space-x-1.5 transition-all"
+                    >
+                      <span>📜 Export Official NDMA Debrief PDF</span>
                     </button>
                     <button
                       onClick={() => exportIncidentPDF(result?.incident_state, result?.master_plan)}
@@ -379,6 +387,8 @@ export default function CommanderPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="space-y-6"
                   >
+                    {/* Financial Damage Assessment & Relief Fund Allocator Card */}
+                    <FinancialDamageCard peopleCount={peopleCount} floodAreaPct={82.5} />
                     {/* Real-time AI Model Precision Benchmark HUD */}
                     <BenchmarkHUD />
 
