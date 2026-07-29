@@ -449,6 +449,8 @@ export default function CommanderPage() {
                       <span>📥 Export Official NDRF PDF</span>
                     </button>
                   </div>
+                </div>
+
                 {/* MASTER DISASTER RESPONSE PLAN TAB */}
                 {activeTab === 'plan' && (
                   <motion.div
