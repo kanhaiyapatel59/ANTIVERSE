@@ -1,7 +1,9 @@
 import React from 'react';
 import { Radio, Waves, ShieldAlert, Zap, Navigation } from 'lucide-react';
+import { useSidebar } from '../context/SidebarContext';
 
 export default function TacticalTicker() {
+  const { sidebarOpen } = useSidebar();
   const tickerItems = [
     "🌊 MEENACHIL RIVER BASIN: +1.8m SURGE WATER LEVEL RISE DETECTED",
     "🛸 DRONE AERIAL RECON: 14 HUMAN VICTIMS & 2 LIVESTOCK LOCATED ON ROOFTOPS IN SECTOR 4",
@@ -13,7 +15,7 @@ export default function TacticalTicker() {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/90 backdrop-blur-md border-t border-cyan-500/30 h-8 flex items-center overflow-hidden font-mono text-[11px] text-cyan-300 shadow-2xl select-none">
+    <div className={`fixed bottom-0 right-0 ${sidebarOpen ? 'left-64' : 'left-0'} z-40 bg-slate-950/90 backdrop-blur-md border-t border-cyan-500/30 h-8 flex items-center overflow-hidden font-mono text-[11px] text-cyan-300 shadow-2xl select-none transition-all duration-300 ease-in-out`}>
       {/* Ticker Title Badge */}
       <div className="flex items-center space-x-1.5 px-3 py-1 bg-cyan-950 border-r border-cyan-500/30 text-cyan-400 font-bold whitespace-nowrap z-10 shadow-md">
         <Radio className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
@@ -21,7 +23,7 @@ export default function TacticalTicker() {
       </div>
 
       {/* Marquee Scrolling Content */}
-      <div className="flex-1 overflow-hidden relative">
+      <div className="flex-1 overflow-hidden relative min-w-0">
         <div className="animate-marquee whitespace-nowrap flex space-x-8 items-center py-1">
           {tickerItems.concat(tickerItems).map((item, idx) => (
             <span key={idx} className="flex items-center space-x-2 text-slate-300">

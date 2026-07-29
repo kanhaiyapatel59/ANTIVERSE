@@ -258,14 +258,14 @@ export default function CommanderPage() {
 
       <main className="p-4 md:p-6 max-w-7xl mx-auto space-y-6 w-full">
         {/* Day 2 Commander Banner */}
-        <div className="glass-panel p-6 rounded-xl border border-purple-500/50 bg-gradient-to-r from-purple-950/40 via-slate-900/60 to-cyan-950/40 flex flex-wrap items-center justify-between gap-4 shadow-[0_0_30px_rgba(147,51,234,0.2)]">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-purple-500/20 border border-purple-500/50 rounded-xl text-purple-300 shadow-[0_0_20px_rgba(168,85,247,0.4)]">
+        <div className="glass-panel p-6 rounded-xl border border-purple-500/50 bg-gradient-to-r from-purple-950/40 via-slate-900/60 to-cyan-950/40 flex flex-wrap items-center justify-between gap-4 shadow-[0_0_30px_rgba(147,51,234,0.2)] w-full min-w-0">
+          <div className="flex items-center space-x-4 min-w-0 max-w-full">
+            <div className="p-3 bg-purple-500/20 border border-purple-500/50 rounded-xl text-purple-300 shadow-[0_0_20px_rgba(168,85,247,0.4)] flex-shrink-0">
               <Cpu className="w-8 h-8 animate-pulse text-purple-300" />
             </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h1 className="text-xl md:text-2xl font-bold text-slate-100 tracking-wider font-orbitron uppercase">
+            <div className="min-w-0">
+              <div className="flex items-center space-x-2 flex-wrap gap-1">
+                <h1 className="text-xl md:text-2xl font-bold text-slate-100 tracking-wider font-orbitron uppercase truncate">
                   LangGraph Master Orchestrator
                 </h1>
                 <span className="px-2.5 py-0.5 text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded-full font-bold shadow-[0_0_10px_rgba(168,85,247,0.3)]">
@@ -278,7 +278,7 @@ export default function CommanderPage() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-3 bg-slate-900/90 px-3.5 py-2 rounded-lg border border-slate-800 font-mono text-xs">
+          <div className="flex items-center space-x-3 bg-slate-900/90 px-3.5 py-2 rounded-lg border border-slate-800 font-mono text-xs flex-shrink-0">
             <Zap className="w-4 h-4 text-purple-400" />
             <span className="text-slate-400">ENGINE:</span>
             <span className="text-purple-300 font-bold">LangGraph + Groq LPU</span>
@@ -286,9 +286,9 @@ export default function CommanderPage() {
         </div>
 
         {/* Console Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-w-0">
           {/* Left Column: Disaster Emergency Inputs (4 cols) */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-4 space-y-6 min-w-0">
             <div className="glass-panel p-6 rounded-xl border border-slate-800 space-y-4">
               <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider font-mono flex items-center justify-between">
                 <span>Emergency Incident Trigger</span>
@@ -314,7 +314,7 @@ export default function CommanderPage() {
                           : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:bg-slate-900'
                       }`}
                     >
-                      <span className="font-bold text-slate-200">{preset.name}</span>
+                      <span className="font-bold text-slate-200 truncate">{preset.name}</span>
                       <span className="text-[10px] text-slate-500">{preset.count} Victims | Drone Stream Attached</span>
                     </button>
                   ))}
@@ -323,7 +323,7 @@ export default function CommanderPage() {
 
               {/* Location Input & Voice Assistant Trigger */}
               <div className="space-y-1 pt-1 font-mono text-xs">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <label className="text-slate-400">Incident Target Sector:</label>
                   <button
                     type="button"
@@ -358,7 +358,7 @@ export default function CommanderPage() {
                   className="w-full bg-slate-950/80 border border-slate-700 focus:border-purple-500 rounded-lg px-4 py-2.5 text-xs text-slate-100 font-mono"
                 />
                 {voiceFeedback && (
-                  <p className="text-[10px] font-mono text-purple-300 pt-0.5 animate-pulse">
+                  <p className="text-[10px] font-mono text-purple-300 pt-0.5 animate-pulse truncate">
                     {voiceFeedback}
                   </p>
                 )}
@@ -420,17 +420,17 @@ export default function CommanderPage() {
               {error && (
                 <div className="p-3 bg-rose-950/60 border border-rose-800 rounded-lg text-rose-300 text-xs font-mono flex items-center space-x-2">
                   <ShieldAlert className="w-4 h-4 text-rose-400 flex-shrink-0" />
-                  <span>{error}</span>
+                  <span className="truncate">{error}</span>
                 </div>
               )}
             </div>
 
             {/* INFRASTRUCTURE CASCADING FAILURE TOPOLOGY MATRIX */}
-            <div className="glass-panel p-5 rounded-xl border border-amber-500/40 bg-amber-950/10 space-y-3 font-mono text-xs shadow-md">
-              <div className="flex items-center justify-between border-b border-amber-500/30 pb-2.5">
+            <div className="glass-panel p-5 rounded-xl border border-amber-500/40 bg-amber-950/10 space-y-3 font-mono text-xs shadow-md min-w-0">
+              <div className="flex items-center justify-between border-b border-amber-500/30 pb-2.5 flex-wrap gap-2">
                 <div className="flex items-center space-x-2">
                   <Zap className="w-4 h-4 text-amber-400 animate-pulse" />
-                  <h3 className="text-xs font-bold text-slate-100 uppercase tracking-wide">
+                  <h3 className="text-xs font-bold text-slate-100 uppercase tracking-wide truncate">
                     Infrastructure Cascading Failure Matrix
                   </h3>
                 </div>
@@ -440,33 +440,33 @@ export default function CommanderPage() {
               </div>
 
               <div className="space-y-2 text-[10px]">
-                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-rose-500/50 flex items-center justify-between">
-                  <div>
-                    <span className="text-slate-400 block">⚡ PRIMARY NODE: POWER SUBSTATION DELTA-4</span>
+                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-rose-500/50 flex items-center justify-between flex-wrap gap-2">
+                  <div className="min-w-0">
+                    <span className="text-slate-400 block truncate">⚡ PRIMARY NODE: POWER SUBSTATION DELTA-4</span>
                     <span className="text-rose-400 font-bold">SUBMERGED / OFFLINE</span>
                   </div>
                   <span className="px-2 py-0.5 bg-rose-950 text-rose-300 rounded font-bold">CRITICAL</span>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-amber-500/50 flex items-center justify-between">
-                  <div>
-                    <span className="text-slate-400 block">🚰 SECONDARY NODE: WATER TREATMENT PLANT 2</span>
+                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-amber-500/50 flex items-center justify-between flex-wrap gap-2">
+                  <div className="min-w-0">
+                    <span className="text-slate-400 block truncate">🚰 SECONDARY NODE: WATER TREATMENT PLANT 2</span>
                     <span className="text-amber-300 font-bold">DEGRADED (85% INUNDATED)</span>
                   </div>
                   <span className="px-2 py-0.5 bg-amber-950 text-amber-300 rounded font-bold">HIGH RISK</span>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-cyan-500/50 flex items-center justify-between">
-                  <div>
-                    <span className="text-slate-400 block">📡 TERTIARY NODE: CELLULAR BASE STATION B</span>
+                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-cyan-500/50 flex items-center justify-between flex-wrap gap-2">
+                  <div className="min-w-0">
+                    <span className="text-slate-400 block truncate">📡 TERTIARY NODE: CELLULAR BASE STATION B</span>
                     <span className="text-cyan-300 font-bold">BACKUP BATTERY (3.5h REMAINING)</span>
                   </div>
                   <span className="px-2 py-0.5 bg-cyan-950 text-cyan-300 rounded font-bold">MONITORING</span>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-emerald-500/50 flex items-center justify-between">
-                  <div>
-                    <span className="text-slate-400 block">🏥 QUATERNARY NODE: REGIONAL TRAUMA HOSPITAL</span>
+                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-emerald-500/50 flex items-center justify-between flex-wrap gap-2">
+                  <div className="min-w-0">
+                    <span className="text-slate-400 block truncate">🏥 QUATERNARY NODE: REGIONAL TRAUMA HOSPITAL</span>
                     <span className="text-emerald-300 font-bold">DIESEL GENERATORS ACTIVE</span>
                   </div>
                   <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 rounded font-bold">STABLE</span>
@@ -476,13 +476,13 @@ export default function CommanderPage() {
           </div>
 
           {/* Right Column: Real-Time Node Lighting Matrix & Response Plan (8 cols) */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-6 min-w-0">
             {/* 6 Agent Sequence Matrix Cards (Lighting Up in Sequence) */}
-            <div className="glass-panel p-5 rounded-xl border border-slate-800 space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
-                <div className="flex items-center space-x-2">
-                  <Activity className="w-4 h-4 text-purple-400 animate-pulse" />
-                  <h3 className="text-xs font-bold font-mono text-slate-200 uppercase">
+            <div className="glass-panel p-5 rounded-xl border border-slate-800 space-y-3 min-w-0">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 flex-wrap gap-2">
+                <div className="flex items-center space-x-2 min-w-0">
+                  <Activity className="w-4 h-4 text-purple-400 animate-pulse flex-shrink-0" />
+                  <h3 className="text-xs font-bold font-mono text-slate-200 uppercase truncate">
                     LangGraph Multi-Agent Execution Pipeline
                   </h3>
                 </div>
@@ -517,7 +517,7 @@ export default function CommanderPage() {
                       key={agent.id}
                       onClick={() => result && setActiveTab('telemetry')}
                       title={result ? "Click to view full telemetries" : agent.name}
-                      className={`p-3 rounded-xl border transition-all duration-500 relative flex flex-col justify-between text-left h-24 cursor-pointer ${
+                      className={`p-3 rounded-xl border transition-all duration-500 relative flex flex-col justify-between text-left h-24 cursor-pointer min-w-0 ${
                         isActive
                           ? 'bg-purple-950/80 border-purple-400 shadow-[0_0_25px_rgba(168,85,247,0.6)] scale-[1.03] z-10'
                           : isDone
@@ -535,7 +535,7 @@ export default function CommanderPage() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="min-w-0">
                         <p className="text-xs font-bold font-mono truncate">{agent.name}</p>
                         <p className="text-[9.5px] font-mono text-slate-400 truncate mt-0.5 font-medium">
                           {snippet}
@@ -549,14 +549,14 @@ export default function CommanderPage() {
 
             {/* TAB CONTENT SWITCHER */}
             {result && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                  <div className="flex space-x-2">
+              <div className="space-y-6 min-w-0">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-3">
+                  <div className="flex space-x-2 flex-wrap gap-2">
                     <button
                       onClick={() => setActiveTab('plan')}
                       className={`px-4 py-2 rounded-lg text-xs font-mono transition-all flex items-center space-x-2 ${
                         activeTab === 'plan'
-                          ? 'bg-purple-950/60 text-purple-300 border border-purple-500/40'
+                          ? 'bg-purple-950/60 text-purple-300 border border-purple-500/40 font-bold'
                           : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
@@ -568,7 +568,7 @@ export default function CommanderPage() {
                       onClick={() => setActiveTab('telemetry')}
                       className={`px-4 py-2 rounded-lg text-xs font-mono transition-all flex items-center space-x-2 ${
                         activeTab === 'telemetry'
-                          ? 'bg-purple-950/60 text-purple-300 border border-purple-500/40'
+                          ? 'bg-purple-950/60 text-purple-300 border border-purple-500/40 font-bold'
                           : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
@@ -580,7 +580,7 @@ export default function CommanderPage() {
                       onClick={() => setActiveTab('schema')}
                       className={`px-4 py-2 rounded-lg text-xs font-mono transition-all flex items-center space-x-2 ${
                         activeTab === 'schema'
-                          ? 'bg-purple-950/60 text-purple-300 border border-purple-500/40'
+                          ? 'bg-purple-950/60 text-purple-300 border border-purple-500/40 font-bold'
                           : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
@@ -774,7 +774,7 @@ export default function CommanderPage() {
                         <span className="text-[10px] font-mono text-slate-400">INCIDENT ID: {result.incident_id}</span>
                       </div>
 
-                      <pre className="bg-slate-950/90 p-5 rounded-xl border border-slate-800/80 text-xs font-mono text-slate-100 whitespace-pre-wrap leading-relaxed shadow-inner">
+                      <pre className="bg-slate-950/90 p-5 rounded-xl border border-slate-800/80 text-xs font-mono text-slate-100 whitespace-pre-wrap break-words overflow-x-auto max-w-full leading-relaxed shadow-inner">
                         {result.master_plan}
                       </pre>
                     </div>
