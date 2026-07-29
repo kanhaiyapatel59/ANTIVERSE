@@ -449,7 +449,32 @@ export default function CommanderPage() {
                       <span>📥 Export Official NDRF PDF</span>
                     </button>
                   </div>
-                </div>
+                {/* MASTER DISASTER RESPONSE PLAN TAB */}
+                {activeTab === 'plan' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-6"
+                  >
+                    {/* Financial Damage Assessment & Relief Fund Allocator Card */}
+                    <FinancialDamageCard peopleCount={peopleCount} floodAreaPct={82.5} />
+                    {/* Real-time AI Model Precision Benchmark HUD */}
+                    <BenchmarkHUD />
+
+                    {/* Live Satellite GIS Map + Risk Radar Matrix */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <GISMap 
+                        locationName={location} 
+                        peopleCount={peopleCount} 
+                        rescueTeam={result.incident_state?.route?.best_rescue_team || "NDRF Battalion 8"}
+                      />
+                      <RiskRadarChart 
+                        peopleCount={peopleCount} 
+                        floodPct={result.incident_state?.detection?.flood_percentage || 82.5}
+                        windSpeed={result.incident_state?.weather?.wind_speed_kmh || 48.5}
+                        roadStatus={result.incident_state?.prediction?.road_accessibility || "BLOCKED"}
+                      />
+                    </div>
 
                     {/* ALL 6 SPECIALIZED AI AGENTS LIVE TELEMETRY MATRIX (ALWAYS VISIBLE) */}
                     <div className="glass-panel p-6 rounded-xl border border-purple-500/40 bg-purple-950/20 space-y-4 shadow-[0_0_25px_rgba(147,51,234,0.15)]">
