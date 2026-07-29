@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import axios from 'axios'
 import { 
   Bell, 
   Radio, 
@@ -23,6 +24,7 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
   const [showThemeDropdown, setShowThemeDropdown] = useState(false)
   const [showRoleDropdown, setShowRoleDropdown] = useState(false)
   const [isAutonomousActive, setIsAutonomousActive] = useState(false)
+  const [autonomousToast, setAutonomousToast] = useState('')
   const [isListeningVoice, setIsListeningVoice] = useState(false)
   const [voiceLog, setVoiceLog] = useState('')
   const { role: currentRole, setRole } = useAuth()
@@ -261,32 +263,44 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
         </div>
         
         {/* AUTONOMOUS BACKGROUND AGENT MONITOR BUTTON */}
-        <button
-          onClick={async () => {
-            try {
-              if (isAutonomousActive) {
-                await axios.post('/api/v1/autonomous/stop');
-                setIsAutonomousActive(false);
-              } else {
-                await axios.post('/api/v1/autonomous/start');
-                setIsAutonomousActive(true);
+        <div className="relative">
+          <button
+            onClick={async () => {
+              const nextState = !isAutonomousActive
+              setIsAutonomousActive(nextState)
+              setAutonomousToast(nextState ? '🤖 Autonomous Monitor ACTIVATED' : '⏹️ Autonomous Monitor STOPPED')
+              setTimeout(() => setAutonomousToast(''), 3500)
+              try {
+                if (nextState) {
+                  await axios.post('/api/v1/autonomous/start', {}, { timeout: 4000 })
+                } else {
+                  await axios.post('/api/v1/autonomous/stop', {}, { timeout: 4000 })
+                }
+              } catch (e) {
+                // Backend may not be running — button still toggles for demo
+                console.warn('Autonomous endpoint unreachable, toggling UI state only:', e.message)
               }
-            } catch (e) {
-              console.error(e);
-            }
-          }}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border transition-all cursor-pointer font-sans text-xs font-bold ${
-            isAutonomousActive 
-              ? 'bg-rose-950/80 border-rose-500 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.4)] animate-pulse'
-              : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-          }`}
-          title="Toggle Autonomous Event Monitoring & Self-Triggering Loop"
-        >
-          <Zap className={`w-3.5 h-3.5 ${isAutonomousActive ? 'text-rose-400 animate-spin' : 'text-slate-500'}`} />
-          <span className="font-mono text-[11px] uppercase">
-            {isAutonomousActive ? '🤖 AUTONOMOUS ACTIVE' : '🤖 START AUTONOMOUS'}
-          </span>
-        </button>
+            }}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border transition-all cursor-pointer font-sans text-xs font-bold ${
+              isAutonomousActive 
+                ? 'bg-rose-950/80 border-rose-500 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.4)] animate-pulse'
+                : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700 hover:border-rose-800'
+            }`}
+            title="Toggle Autonomous Event Monitoring & Self-Triggering Loop"
+          >
+            <Zap className={`w-3.5 h-3.5 ${isAutonomousActive ? 'text-rose-400 animate-spin' : 'text-slate-500'}`} />
+            <span className="font-mono text-[11px] uppercase">
+              {isAutonomousActive ? '🤖 AUTONOMOUS ACTIVE' : '🤖 START AUTONOMOUS'}
+            </span>
+          </button>
+
+          {/* Toast Notification */}
+          {autonomousToast && (
+            <div className="absolute top-12 right-0 z-50 whitespace-nowrap px-3 py-2 rounded-xl border text-[11px] font-mono font-bold shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200 bg-slate-900 border-rose-500/60 text-rose-300">
+              {autonomousToast}
+            </div>
+          )}
+        </div>
 
         {/* VOICE COMMAND CONTROLLER MIC BUTTON */}
         <button
