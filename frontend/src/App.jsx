@@ -28,27 +28,26 @@ export default function App() {
   const navigate = useNavigate();
   const isLandingPage = location.pathname === '/';
 
-  // Redirect to Landing Page ('/') whenever browser page is refreshed/reloaded
+  // Redirect to Landing Page ('/') ONLY when browser refresh (F5 / Cmd+R) occurs
   useEffect(() => {
-    const navEntries = performance.getEntriesByType('navigation');
-    const isPerformanceReload = navEntries.length > 0 && navEntries[0].type === 'reload';
-    const isLegacyReload = window.performance && window.performance.navigation && window.performance.navigation.type === 1;
-    const isSessionReload = sessionStorage.getItem('page_reloaded_flag') === 'true';
+    const isRefresh = sessionStorage.getItem('is_browser_refresh') === 'true';
 
-    if ((isPerformanceReload || isLegacyReload || isSessionReload) && window.location.pathname !== '/') {
-      sessionStorage.removeItem('page_reloaded_flag');
-      navigate('/', { replace: true });
+    if (isRefresh) {
+      sessionStorage.removeItem('is_browser_refresh');
+      if (window.location.pathname !== '/') {
+        navigate('/', { replace: true });
+      }
     }
 
     const handleBeforeUnload = () => {
-      sessionStorage.setItem('page_reloaded_flag', 'true');
+      sessionStorage.setItem('is_browser_refresh', 'true');
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [navigate]);
+  }, []);
 
   return (
     <AuthProvider>
