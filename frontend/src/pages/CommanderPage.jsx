@@ -256,7 +256,7 @@ export default function CommanderPage() {
     <div className="min-h-screen bg-[#060911] text-slate-100 bg-hud-grid pb-16">
       <Header title="Commander Agent (LangGraph Multi-Agent Orchestrator)" />
 
-      <main className={`transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-64' : 'ml-0'} p-6 max-w-7xl mx-auto space-y-6`}>
+      <main className="p-4 md:p-6 max-w-7xl mx-auto space-y-6 w-full">
         {/* Day 2 Commander Banner */}
         <div className="glass-panel p-6 rounded-xl border border-purple-500/50 bg-gradient-to-r from-purple-950/40 via-slate-900/60 to-cyan-950/40 flex flex-wrap items-center justify-between gap-4 shadow-[0_0_30px_rgba(147,51,234,0.2)]">
           <div className="flex items-center space-x-4">

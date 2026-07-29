@@ -98,11 +98,7 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
   const currentThemeObj = themes.find(t => t.id === theme)
 
   return (
-    <header className={`
-      h-16 bg-[var(--bg-header)] border-b border-[var(--border-subtle)] backdrop-blur-md px-4 md:px-6 flex items-center justify-between sticky top-0 z-30
-      transition-all duration-300 ease-in-out select-none
-      ${sidebarOpen ? 'ml-64' : 'ml-0'}
-    `}>
+    <header className="h-16 bg-[var(--bg-header)] border-b border-[var(--border-subtle)] backdrop-blur-md px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 transition-all duration-300 ease-in-out select-none w-full">
       {/* LEFT SECTION: Sidebar Toggle + TOP-LEFT ALERT ICON + Page Title */}
       <div className="flex items-center space-x-3">
         {/* Sidebar Toggle Button */}

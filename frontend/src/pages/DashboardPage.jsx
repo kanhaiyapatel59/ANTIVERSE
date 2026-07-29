@@ -81,7 +81,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[var(--bg-canvas)] text-[var(--text-main)] bg-hud-grid pb-16 transition-colors duration-300">
       <Header title="National Disaster Operations Command Center" />
 
-      <main className={`transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-64' : 'ml-0'} p-6 max-w-7xl mx-auto space-y-6`}>
+      <main className="p-4 md:p-6 max-w-7xl mx-auto space-y-6 w-full">
         
         {/* EXECUTIVE KPI STATISTICS ROW */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">

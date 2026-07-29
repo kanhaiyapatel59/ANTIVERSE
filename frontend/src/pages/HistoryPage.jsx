@@ -48,7 +48,7 @@ export default function HistoryPage() {
     <div className="min-h-screen bg-[#060911] text-slate-100 bg-hud-grid pb-16">
       <Header title="Historical Incident Audit Log & Database Archive" />
 
-      <main className={`transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-64' : 'ml-0'} p-6 max-w-7xl mx-auto space-y-6`}>
+      <main className="p-4 md:p-6 max-w-7xl mx-auto space-y-6 w-full">
         {/* Banner Header */}
         <div className="glass-panel p-6 rounded-xl border border-cyan-500/30 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center space-x-4">

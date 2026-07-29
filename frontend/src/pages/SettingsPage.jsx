@@ -11,7 +11,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-canvas)] text-[var(--text-main)] transition-colors duration-300">
       <Header title="System Settings & Visual Theme" />
-      <main className={`transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-64' : 'ml-0'} p-6 max-w-5xl mx-auto space-y-6`}>
+      <main className="p-4 md:p-6 max-w-5xl mx-auto space-y-6 w-full">
         
         {/* THEME PREFERENCES SECTION */}
         <div className="glass-panel p-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-4 shadow-md">
