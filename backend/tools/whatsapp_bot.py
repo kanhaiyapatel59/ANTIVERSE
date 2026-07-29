@@ -1,7 +1,6 @@
 import os
 import re
 import urllib.parse
-import webbrowser
 from database.db import log_activity
 
 async def send_whatsapp_group_message(group_identifier: str, message_text: str) -> dict:
@@ -62,7 +61,7 @@ async def send_whatsapp_group_message(group_identifier: str, message_text: str) 
         except Exception as err:
             print(f"⚠️ WhatsApp API gateway note: {err}")
 
-    # Strategy 3: Direct Web Deep Link fallback
+    # Strategy 3: Return deep-link URL — frontend opens it via window.open()
     if group_id:
         url = f"https://chat.whatsapp.com/{group_id}"
     elif target.startswith("+") or target.isdigit():
@@ -71,23 +70,17 @@ async def send_whatsapp_group_message(group_identifier: str, message_text: str) 
     else:
         url = f"https://wa.me/?text={urllib.parse.quote(formatted_msg)}"
 
-    try:
-        webbrowser.open(url)
-        log_activity(
-            agent_name="CommunicationAgent",
-            action="WHATSAPP_GROUP_DISPATCH",
-            status="SUCCESS",
-            details=f"Dispatched WhatsApp message for group '{target}'"
-        )
-        return {
-            "status": "SUCCESS",
-            "mode": "DEEP_LINK",
-            "target_group": target,
-            "url": url,
-            "details": f"Launched WhatsApp targeting group '{target}'"
-        }
-    except Exception as e:
-        return {
-            "status": "ERROR",
-            "error": str(e)
-        }
+    log_activity(
+        agent_name="CommunicationAgent",
+        action="WHATSAPP_GROUP_DISPATCH",
+        status="SUCCESS",
+        details=f"Deep-link generated for WhatsApp group '{target}'"
+    )
+    return {
+        "status": "SUCCESS",
+        "mode": "DEEP_LINK",
+        "target_group": target,
+        "url": url,
+        "open_in_browser": True,
+        "details": f"Open this URL in the browser to send WhatsApp message to '{target}'"
+    }

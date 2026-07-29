@@ -51,7 +51,7 @@ async def weather_node(state: GraphState) -> Dict[str, Any]:
     inp = WeatherInput(city=city)
     out: WeatherOutput = await run_weather_agent(inp, incident_id=state["incident_id"])
     
-    logs = state.get("logs", [])
+    logs = list(state.get("logs", []))
     logs.append(f"Node [WeatherAgent] executed: Risk={out.flood_risk} | Surge={out.storm_surge_index} | Wind={out.wind_speed_kmh}km/h")
     return {"weather": out.model_dump(), "logs": logs}
 
@@ -61,7 +61,7 @@ async def detection_node(state: GraphState) -> Dict[str, Any]:
     inp = DetectionInput(image_url=img, location=loc)
     out: DetectionOutput = await run_detection_agent(inp, incident_id=state["incident_id"])
     
-    logs = state.get("logs", [])
+    logs = list(state.get("logs", []))
     logs.append(f"Node [DetectionAgent] executed: Humans={out.people_detected} | Animals={out.animals_detected} | Flood={out.flood_percentage}%")
     return {
         "detection": out.model_dump(),
@@ -79,7 +79,7 @@ async def prediction_node(state: GraphState) -> Dict[str, Any]:
     # Calculate priority level
     priority = "P1_CRITICAL" if out.urgency == "IMMEDIATE_EVACUATION" else "P2_HIGH" if out.urgency == "URGENT_MONITORING" else "P3_MEDIUM"
     
-    logs = state.get("logs", [])
+    logs = list(state.get("logs", []))
     logs.append(f"Node [PredictionAgent] executed: Surge Rise={out.water_rise_estimate} | Speed={out.surge_velocity_ms}m/s | Priority={priority}")
     return {"prediction": out.model_dump(), "priority_level": priority, "logs": logs}
 
@@ -88,7 +88,7 @@ async def route_node(state: GraphState) -> Dict[str, Any]:
     inp = RouteInput(incident_location=loc, available_teams=["NDRF Team Alpha", "Fire Battalion 4", "District Rescue Squad 2"])
     out: RouteOutput = await run_route_agent(inp, incident_id=state["incident_id"])
     
-    logs = state.get("logs", [])
+    logs = list(state.get("logs", []))
     logs.append(f"Node [RouteAgent] executed: Assigned={out.best_rescue_team} | ETA={out.eta}")
     return {"route": out.model_dump(), "logs": logs}
 
@@ -99,7 +99,7 @@ async def resource_node(state: GraphState) -> Dict[str, Any]:
     inp = ResourceInput(people_count=human_count, location=loc, animals_count=animal_count)
     out: ResourceOutput = await run_resource_agent(inp, incident_id=state["incident_id"])
     
-    logs = state.get("logs", [])
+    logs = list(state.get("logs", []))
     logs.append(f"Node [ResourceAgent] executed: Shelter={out.nearest_shelter} | Water={out.drinking_water_liters}L | Feed={out.livestock_feed_kg}kg")
     return {"resources": out.model_dump(), "logs": logs}
 
@@ -121,7 +121,7 @@ async def communication_node(state: GraphState) -> Dict[str, Any]:
     )
     out: CommunicationOutput = await run_communication_agent(inp, incident_id=state["incident_id"])
     
-    logs = state.get("logs", [])
+    logs = list(state.get("logs", []))
     logs.append("Node [CommunicationAgent] executed: SMS, Email, Broadcast, Hindi Alert & CAP JSON Ready")
     return {"communication": out.model_dump(), "logs": logs}
 
@@ -166,8 +166,7 @@ async def synthesis_node(state: GraphState) -> Dict[str, Any]:
                 response = await asyncio.wait_for(llm.ainvoke([("system", COMMANDER_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
                 master_plan = response.content.strip()
             except Exception as e:
-                print(f"⚠️ Gemini LLM synthesis timed out or failed ({e})...")
-                print(f"⚠️ Gemini LLM synthesis failed ({e}), using fallback plan...")
+                print(f"⚠️ Gemini LLM synthesis timed out or failed ({e}), using fallback plan...")
 
     if not master_plan:
         master_plan = f"MASTER DISASTER RESPONSE PLAN FOR {loc.upper()} ({inc_id})\n\nAll 6 AI Agents successfully orchestrated. NDRF teams dispatched, shelter assured, and emergency communications broadcast."
@@ -198,7 +197,7 @@ async def synthesis_node(state: GraphState) -> Dict[str, Any]:
     except Exception as db_err:
         print(f"⚠️ Failed to persist master incident: {db_err}")
 
-    logs = state.get("logs", [])
+    logs = list(state.get("logs", []))
     logs.append("Commander Node [Synthesis] executed: Master Plan Compiled.")
     return {"master_plan": master_plan, "status": "COMPLETED", "logs": logs}
 

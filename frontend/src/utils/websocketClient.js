@@ -4,6 +4,7 @@ class DisasterWebSocketClient {
   constructor() {
     this.socket = null;
     this.listeners = [];
+    this.shouldReconnect = true;
   }
 
   connect() {
@@ -27,11 +28,22 @@ class DisasterWebSocketClient {
       };
 
       this.socket.onclose = () => {
-        console.log("🔴 [WEBSOCKET TELEMETRY] Disconnected. Reconnecting in 3s...");
-        setTimeout(() => this.connect(), 3000);
+        console.log("🔴 [WEBSOCKET TELEMETRY] Disconnected.");
+        if (this.shouldReconnect) {
+          console.log("Reconnecting in 3s...");
+          setTimeout(() => this.connect(), 3000);
+        }
       };
     } catch (err) {
       console.error("⚠️ WebSocket Connection Error:", err);
+    }
+  }
+
+  disconnect() {
+    this.shouldReconnect = false;
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
     }
   }
 

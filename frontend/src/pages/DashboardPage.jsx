@@ -59,12 +59,23 @@ export default function DashboardPage() {
     { id: 6, name: 'Agent 06: Communication', status: 'ONLINE', path: '/communication', color: 'border-rose-500/30 text-rose-700 dark:text-rose-400 bg-rose-50/50 dark:bg-rose-950/20' },
   ]
 
-  const analyticsData = [
-    { sector: 'Mumbai', victims: 14, color: '#2563EB' },
-    { sector: 'Wayanad', victims: 26, color: '#7C3AED' },
-    { sector: 'Guwahati', victims: 8, color: '#D97706' },
-    { sector: 'Chennai', victims: 18, color: '#0284C7' },
-  ]
+  // Derive live KPI metrics from fetched incidents
+  const totalVictims = incidents.reduce((sum, inc) => sum + (inc.people_affected || 0), 0)
+  const activeSectors = incidents.length || 0
+  const rescueSquads = Math.max(1, Math.ceil(activeSectors * 1.2)) // 1 squad per ~0.8 sectors
+
+  const analyticsData = incidents.length > 0
+    ? incidents.slice(0, 4).map((inc, i) => ({
+        sector: inc.location?.split(' ')[0] || `Sector ${i + 1}`,
+        victims: inc.people_affected || 0,
+        color: ['#2563EB', '#7C3AED', '#D97706', '#0284C7'][i % 4]
+      }))
+    : [
+        { sector: 'Mumbai', victims: 14, color: '#2563EB' },
+        { sector: 'Wayanad', victims: 26, color: '#7C3AED' },
+        { sector: 'Guwahati', victims: 8, color: '#D97706' },
+        { sector: 'Chennai', victims: 18, color: '#0284C7' },
+      ]
 
   return (
     <div className="min-h-screen bg-[var(--bg-canvas)] text-[var(--text-main)] bg-hud-grid pb-16 transition-colors duration-300">
@@ -82,7 +93,7 @@ export default function DashboardPage() {
           >
             <div>
               <p className="text-[10px] font-mono text-blue-700 dark:text-blue-400 uppercase font-bold tracking-wider">Disaster Sectors</p>
-              <p className="text-2xl font-black font-mono text-[var(--text-main)] mt-1">4 Active</p>
+              <p className="text-2xl font-black font-mono text-[var(--text-main)] mt-1">{activeSectors > 0 ? `${activeSectors} Active` : '0 Active'}</p>
             </div>
             <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-blue-600 shadow-sm">
               <CloudRain className="w-5 h-5 animate-pulse" />
@@ -96,7 +107,7 @@ export default function DashboardPage() {
           >
             <div>
               <p className="text-[10px] font-mono text-teal-700 dark:text-teal-400 uppercase font-bold tracking-wider">Victims Affected</p>
-              <p className="text-2xl font-black font-mono text-[var(--text-main)] mt-1">66 People</p>
+              <p className="text-2xl font-black font-mono text-[var(--text-main)] mt-1">{totalVictims > 0 ? `${totalVictims} People` : '—'}</p>
             </div>
             <div className="p-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 text-teal-600 shadow-sm">
               <Users className="w-5 h-5 animate-bounce" />
@@ -138,7 +149,7 @@ export default function DashboardPage() {
           >
             <div>
               <p className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 uppercase font-bold tracking-wider">Rescue Forces</p>
-              <p className="text-sm font-black font-mono text-[var(--text-main)] mt-1">6 NDRF Squads</p>
+              <p className="text-sm font-black font-mono text-[var(--text-main)] mt-1">{rescueSquads} NDRF Squads</p>
             </div>
             <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-600 shadow-sm">
               <Truck className="w-5 h-5" />

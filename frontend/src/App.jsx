@@ -27,16 +27,6 @@ export default function App() {
   const location = useLocation();
   const isLandingPage = location.pathname === '/';
 
-  // Redirect to landing page '/' on browser refresh
-  React.useEffect(() => {
-    const navEntries = performance.getEntriesByType('navigation');
-    const isReload = navEntries.length > 0 && navEntries[0].type === 'reload';
-    const isLegacyReload = window.performance && window.performance.navigation && window.performance.navigation.type === 1;
-
-    if ((isReload || isLegacyReload) && window.location.pathname !== '/') {
-      window.location.replace('/');
-    }
-  }, []);
 
   return (
     <AuthProvider>

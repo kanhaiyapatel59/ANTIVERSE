@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 import { 
   Bell, 
   Radio, 
@@ -25,13 +25,14 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
   const [showRoleDropdown, setShowRoleDropdown] = useState(false)
   const [isAutonomousActive, setIsAutonomousActive] = useState(false)
   const [autonomousToast, setAutonomousToast] = useState('')
-  const [isListeningVoice, setIsListeningVoice] = useState(false)
-  const [voiceLog, setVoiceLog] = useState('')
   const { role: currentRole, setRole } = useAuth()
   const { sidebarOpen, toggleSidebar, meshMode, toggleMeshMode } = useSidebar()
   const { theme, setTheme, themes } = useTheme()
+  const navigate = useNavigate()
   const themeMenuRef = useRef(null)
   const alertDrawerRef = useRef(null)
+  const roleMenuRef = useRef(null)
+  const [isListeningVoice, setIsListeningVoice] = useState(false)
 
   const [alerts, setAlerts] = useState([
     {
@@ -75,6 +76,9 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
       }
       if (alertDrawerRef.current && !alertDrawerRef.current.contains(e.target)) {
         setShowAlertsDrawer(false)
+      }
+      if (roleMenuRef.current && !roleMenuRef.current.contains(e.target)) {
+        setShowRoleDropdown(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -222,7 +226,7 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
       <div className="flex items-center space-x-3 text-xs font-mono">
         
         {/* GOVERNMENT RBAC ROLE BADGE SELECTOR */}
-        <div className="relative">
+        <div className="relative" ref={roleMenuRef}>
           <button
             onClick={() => setShowRoleDropdown(!showRoleDropdown)}
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border bg-purple-950/60 border-purple-500/50 text-purple-300 font-sans text-xs font-bold hover:border-purple-400 cursor-pointer shadow-sm"
@@ -265,21 +269,12 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
         {/* AUTONOMOUS BACKGROUND AGENT MONITOR BUTTON */}
         <div className="relative">
           <button
-            onClick={async () => {
+            onClick={() => {
               const nextState = !isAutonomousActive
               setIsAutonomousActive(nextState)
               setAutonomousToast(nextState ? '🤖 Autonomous Monitor ACTIVATED' : '⏹️ Autonomous Monitor STOPPED')
               setTimeout(() => setAutonomousToast(''), 3500)
-              try {
-                if (nextState) {
-                  await axios.post('/api/v1/autonomous/start', {}, { timeout: 4000 })
-                } else {
-                  await axios.post('/api/v1/autonomous/stop', {}, { timeout: 4000 })
-                }
-              } catch (e) {
-                // Backend may not be running — button still toggles for demo
-                console.warn('Autonomous endpoint unreachable, toggling UI state only:', e.message)
-              }
+              // Endpoints removed — UI-only demo toggle
             }}
             className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border transition-all cursor-pointer font-sans text-xs font-bold ${
               isAutonomousActive 
@@ -316,7 +311,7 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
               initVoiceRecognition((cmd, text) => {
                 setVoiceLog(`Command: "${text}"`);
                 setTimeout(() => setVoiceLog(''), 4000);
-                if (cmd.type === 'NAVIGATE') window.location.href = cmd.payload;
+                if (cmd.type === 'NAVIGATE') navigate(cmd.payload);
               });
               startVoiceListening();
               setIsListeningVoice(true);

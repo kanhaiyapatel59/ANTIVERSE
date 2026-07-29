@@ -33,7 +33,7 @@ def save_master_incident(incident_data: dict):
         except Exception as mongo_err:
             print(f"⚠️ MongoDB write error ({mongo_err}), falling back to SQLite.")
 
-    # SQLite persistence
+    # SQLite persistence (incidents table has no animals_affected column — omitted intentionally)
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -54,6 +54,7 @@ def save_master_incident(incident_data: dict):
         conn.close()
     except Exception as db_err:
         print(f"⚠️ SQLite incident write error: {db_err}")
+
 
 def fetch_incident_history(limit: int = 50) -> list:
     """

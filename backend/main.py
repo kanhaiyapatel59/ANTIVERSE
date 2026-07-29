@@ -4,6 +4,7 @@ Multi-Agent Emergency Response & Incident Orchestration Platform.
 """
 
 import os
+from typing import List
 import uuid
 from typing import List, Dict, Any
 from fastapi import FastAPI, HTTPException, UploadFile, File
@@ -282,9 +283,8 @@ async def auto_send_whatsapp_group(payload: WhatsAppSendRequest):
     res = await send_whatsapp_group_message(payload.group_name, payload.message)
     return res
 
-# --- WEBSOCKET REAL-TIME TELEMETRY STREAM & AUTONOMOUS AGENT ENDPOINTS ---
+# --- WEBSOCKET REAL-TIME TELEMETRY STREAM ---
 from fastapi import WebSocket, WebSocketDisconnect
-from agents.autonomous_monitor import autonomous_monitor_instance
 
 active_websockets: List[WebSocket] = []
 
@@ -314,25 +314,6 @@ async def broadcast_ws_event(event_data: dict):
             await ws.send_json(event_data)
         except Exception:
             pass
-
-@app.post("/api/v1/autonomous/start")
-async def start_autonomous_monitoring():
-    if not autonomous_monitor_instance.is_running:
-        import asyncio
-        asyncio.create_task(autonomous_monitor_instance.start_autonomous_loop(callback=broadcast_ws_event))
-    return {"status": "success", "message": "Autonomous Background Disaster Monitoring Loop Started"}
-
-@app.post("/api/v1/autonomous/stop")
-async def stop_autonomous_monitoring():
-    autonomous_monitor_instance.stop()
-    return {"status": "success", "message": "Autonomous Monitoring Stopped"}
-
-@app.get("/api/v1/autonomous/status")
-async def get_autonomous_status():
-    return {
-        "is_running": autonomous_monitor_instance.is_running,
-        "logs": autonomous_monitor_instance.sensor_logs[-10:]
-    }
 
 
 if __name__ == "__main__":
