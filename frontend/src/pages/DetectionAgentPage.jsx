@@ -41,19 +41,28 @@ export default function DetectionAgentPage() {
     if (!file) return
     setUploading(true)
     setError('')
+
+    // Read local image immediately so preview updates instantly
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const localDataUrl = event.target.result
+      setImageUrl(localDataUrl)
+      handleRunDetection(localDataUrl, location)
+    }
+    reader.readAsDataURL(file)
+
     try {
       const formData = new FormData()
       formData.append('file', file)
       const res = await axios.post('/api/v1/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 3000
       })
-      if (res.data.url) {
+      if (res.data?.url) {
         setImageUrl(res.data.url)
-        handleRunDetection(res.data.url, location)
       }
     } catch (err) {
-      console.error(err)
-      setError('Failed to upload image to backend server')
+      console.warn("⚠️ Backend upload notice (using instant FileReader preview):", err)
     } finally {
       setUploading(false)
     }
@@ -141,7 +150,9 @@ export default function DetectionAgentPage() {
 
   const getDisplayUrl = () => {
     const matched = presetFeeds.find(f => f.id === imageUrl || f.url === imageUrl)
-    return matched ? matched.url : imageUrl.startsWith('http') ? imageUrl : presetFeeds[0].url
+    if (matched) return matched.url
+    if (imageUrl) return imageUrl
+    return presetFeeds[0].url
   }
 
   return (
