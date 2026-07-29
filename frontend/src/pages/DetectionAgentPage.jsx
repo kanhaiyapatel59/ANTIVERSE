@@ -47,7 +47,7 @@ export default function DetectionAgentPage() {
     reader.onload = (event) => {
       const localDataUrl = event.target.result
       setImageUrl(localDataUrl)
-      handleRunDetection(localDataUrl, location)
+      setResult(null)
     }
     reader.readAsDataURL(file)
 
@@ -102,12 +102,17 @@ export default function DetectionAgentPage() {
   const handleRunDetection = async (targetFeed = imageUrl, targetLoc = location) => {
     setLoading(true)
     setError('')
+    setResult(null)
     try {
+      // Simulate real-time optical scan delay for scanning animation
+      await new Promise(resolve => setTimeout(resolve, 1200))
+
       const response = await axios.post('/api/v1/agent/detection', {
         image_url: targetFeed,
         location: targetLoc
       }, { timeout: 3000 })
       setResult(response.data)
+      setVisualMode('bounding')
       try {
         localStorage.setItem('latest_detection', JSON.stringify(response.data))
         localStorage.setItem('latest_location', targetLoc)
@@ -117,7 +122,6 @@ export default function DetectionAgentPage() {
       }
     } catch (err) {
       console.warn("⚠️ Backend call timed out or offline, using high-speed dynamic vision analysis:", err)
-      const feedLen = (targetFeed || '').length
       const dynamicPeople = targetFeed.includes('rooftop') ? 14 : targetFeed.includes('urban') ? 26 : targetFeed.includes('bridge') ? 8 : 5
       const dynamicAnimals = targetFeed.includes('rooftop') ? 2 : targetFeed.includes('urban') ? 4 : targetFeed.includes('riverbank') ? 5 : 1
       const dynamicFloodPct = targetFeed.includes('rooftop') ? 82.5 : targetFeed.includes('urban') ? 68.0 : targetFeed.includes('bridge') ? 91.0 : 64.5
@@ -133,6 +137,7 @@ export default function DetectionAgentPage() {
         location_summary: `Computer Vision Aerial Recon: ${dynamicPeople} human victims & ${dynamicAnimals} domestic animal identified in ${targetLoc}. Inundation coverage: ${dynamicFloodPct}%.`
       }
       setResult(fallbackData)
+      setVisualMode('bounding')
       try {
         localStorage.setItem('latest_detection', JSON.stringify(fallbackData))
         localStorage.setItem('latest_location', targetLoc)
@@ -208,7 +213,10 @@ export default function DetectionAgentPage() {
                   <input
                     type="text"
                     value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    onChange={(e) => {
+                      setLocation(e.target.value)
+                      setResult(null)
+                    }}
                     placeholder="Sector / Coordinate tag..."
                     className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-500 rounded-lg px-4 py-2.5 text-xs text-slate-100 focus:outline-none font-mono mt-1"
                   />
@@ -219,7 +227,10 @@ export default function DetectionAgentPage() {
                   <input
                     type="text"
                     value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
+                    onChange={(e) => {
+                      setImageUrl(e.target.value)
+                      setResult(null)
+                    }}
                     placeholder="Enter Image URL or asset ID..."
                     className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-500 rounded-lg px-4 py-2.5 text-xs text-slate-100 focus:outline-none font-mono mt-1"
                   />
@@ -251,7 +262,7 @@ export default function DetectionAgentPage() {
                       onClick={() => {
                         setImageUrl(feed.id)
                         setLocation(feed.location)
-                        handleRunDetection(feed.id, feed.location)
+                        setResult(null)
                       }}
                       className={`w-full text-left p-3 rounded-lg border transition-all text-xs font-mono flex items-center space-x-3 ${
                         imageUrl === feed.id

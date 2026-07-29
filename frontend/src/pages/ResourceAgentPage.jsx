@@ -136,7 +136,10 @@ export default function ResourceAgentPage() {
                 <input
                   type="text"
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onChange={(e) => {
+                    setLocation(e.target.value)
+                    setResult(null)
+                  }}
                   placeholder="Target sector..."
                   className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-500 rounded-lg px-4 py-2.5 text-xs text-slate-100 focus:outline-none font-mono"
                 />
@@ -148,7 +151,7 @@ export default function ResourceAgentPage() {
                       onClick={() => {
                         setLocation(preset.name)
                         setPeopleCount(preset.count)
-                        handleRunResource(preset.name, preset.count)
+                        setResult(null)
                       }}
                       className={`text-[10px] font-mono px-2.5 py-1 rounded border transition-all ${
                         location === preset.name
@@ -176,7 +179,10 @@ export default function ResourceAgentPage() {
                   min="1"
                   max="200"
                   value={peopleCount}
-                  onChange={(e) => setPeopleCount(Number(e.target.value))}
+                  onChange={(e) => {
+                    setPeopleCount(Number(e.target.value))
+                    setResult(null)
+                  }}
                   className="w-full h-2 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-purple-500"
                 />
 

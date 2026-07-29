@@ -231,6 +231,7 @@ export default function CommanderPage() {
                         setLocation(preset.name)
                         setImageUrl(preset.img)
                         setPeopleCount(preset.count)
+                        setResult(null)
                       }}
                       className={`w-full text-left p-3 rounded-lg border transition-all text-xs font-mono flex flex-col justify-between ${
                         location === preset.name
@@ -251,7 +252,10 @@ export default function CommanderPage() {
                 <input
                   type="text"
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onChange={(e) => {
+                    setLocation(e.target.value)
+                    setResult(null)
+                  }}
                   className="w-full bg-slate-950/80 border border-slate-700 focus:border-purple-500 rounded-lg px-4 py-2.5 text-xs text-slate-100 font-mono"
                 />
               </div>
@@ -282,7 +286,10 @@ export default function CommanderPage() {
                   min="1"
                   max="150"
                   value={peopleCount}
-                  onChange={(e) => setPeopleCount(Number(e.target.value))}
+                  onChange={(e) => {
+                    setPeopleCount(Number(e.target.value))
+                    setResult(null)
+                  }}
                   className="w-full h-2 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-purple-500"
                 />
               </div>

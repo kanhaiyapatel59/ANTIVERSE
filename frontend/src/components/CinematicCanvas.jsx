@@ -174,6 +174,14 @@ function EarthGlobe() {
     }
   });
 
+  // Pre-compute typed array buffers to avoid per-render Float32Array allocations
+  const arcBuffers = useMemo(() => {
+    return arcs.map(pts => ({
+      count: pts.length,
+      array: new Float32Array(pts.flatMap(p => [p.x, p.y, p.z]))
+    }));
+  }, [arcs]);
+
   return (
     <group ref={earthGroupRef} position={[0, 0, 0]}>
       {/* Primary 3D Dark Earth Sphere */}
@@ -246,13 +254,13 @@ function EarthGlobe() {
       ))}
 
       {/* Communication Data Lines */}
-      {arcs.map((pts, idx) => (
+      {arcBuffers.map((buf, idx) => (
         <line key={idx}>
           <bufferGeometry attach="geometry">
             <bufferAttribute
               attach="attributes-position"
-              count={pts.length}
-              array={new Float32Array(pts.flatMap(p => [p.x, p.y, p.z]))}
+              count={buf.count}
+              array={buf.array}
               itemSize={3}
             />
           </bufferGeometry>
@@ -280,6 +288,7 @@ function SpeedParticles({ count = 600 }) {
   }, [count]);
 
   useFrame((state, delta) => {
+    if (!mesh.current) return;
     particles.forEach((p, i) => {
       p.z += p.speed;
       if (p.z > 50) p.z = -100;

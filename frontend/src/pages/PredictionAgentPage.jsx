@@ -121,10 +121,13 @@ export default function PredictionAgentPage() {
           detection: detObj
         }
         setSelectedScenario(customScenario)
-        // DO NOT auto-trigger analysis on mount. Only analyze when user explicitly clicks.
+        handleRunPrediction(customScenario)
+      } else {
+        handleRunPrediction(selectedScenario)
       }
     } catch (e) {
       console.error(e)
+      handleRunPrediction(selectedScenario)
     }
   }, [])
 
@@ -263,7 +266,7 @@ export default function PredictionAgentPage() {
                       key={sc.id}
                       onClick={() => {
                         setSelectedScenario(sc)
-                        handleRunPrediction(sc)
+                        setResult(null)
                       }}
                       className={`w-full text-left p-3 rounded-lg border transition-all text-xs font-mono flex flex-col justify-between ${
                         selectedScenario.id === sc.id

@@ -134,7 +134,10 @@ export default function RouteAgentPage() {
                 <input
                   type="text"
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onChange={(e) => {
+                    setLocation(e.target.value)
+                    setResult(null)
+                  }}
                   placeholder="Target location..."
                   className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-500 rounded-lg px-4 py-2.5 text-xs text-slate-100 focus:outline-none font-mono"
                 />
@@ -145,7 +148,7 @@ export default function RouteAgentPage() {
                       key={preset.name}
                       onClick={() => {
                         setLocation(preset.name)
-                        handleRunRoute(preset.name)
+                        setResult(null)
                       }}
                       className={`text-[10px] font-mono px-2.5 py-1 rounded border transition-all ${
                         location === preset.name

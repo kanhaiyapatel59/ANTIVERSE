@@ -126,7 +126,10 @@ export default function WeatherAgentPage() {
                   <input
                     type="text"
                     value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    onChange={(e) => {
+                      setCity(e.target.value)
+                      setResult(null)
+                    }}
                     placeholder="Enter city name (e.g. Mumbai, Wayanad)..."
                     className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-500 rounded-lg px-4 py-3 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
                   />
@@ -142,7 +145,7 @@ export default function WeatherAgentPage() {
                       key={preset.name}
                       onClick={() => {
                         setCity(preset.name)
-                        handleRunAgent(preset.name)
+                        setResult(null)
                       }}
                       className={`text-left p-2.5 rounded-lg border transition-all text-xs font-mono flex flex-col justify-between ${
                         city.toLowerCase() === preset.name.toLowerCase()
