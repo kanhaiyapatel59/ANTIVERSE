@@ -20,7 +20,10 @@ import {
   Zap,
   Activity,
   Layers,
-  Upload
+  Upload,
+  Mic,
+  MicOff,
+  Volume2
 } from 'lucide-react'
 import axios from 'axios'
 import { exportIncidentPDF } from '../utils/pdfExporter'
@@ -48,6 +51,74 @@ export default function CommanderPage() {
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState('plan') // 'plan' | 'telemetry' | 'schema'
   const [showReplayModal, setShowReplayModal] = useState(false)
+
+  // Web Speech API Voice Control for Commander Agent
+  const [isListening, setIsListening] = useState(false)
+  const [voiceFeedback, setVoiceFeedback] = useState('')
+
+  const handleVoiceControl = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      setError('Speech recognition is not supported in this browser window. Use Chrome/Brave/Edge.')
+      return
+    }
+
+    if (isListening) {
+      setIsListening(false)
+      return
+    }
+
+    try {
+      const recognition = new SpeechRecognition()
+      recognition.continuous = false
+      recognition.interimResults = false
+      recognition.lang = 'en-US'
+
+      recognition.onstart = () => {
+        setIsListening(true)
+        setVoiceFeedback('🎙 Listening... Speak directive e.g. "Orchestrate Wayanad with 26 victims"')
+      }
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript
+        setVoiceFeedback(`Command Received: "${transcript}"`)
+
+        // Parse victim counts
+        const numMatch = transcript.match(/\d+/)
+        if (numMatch) {
+          setPeopleCount(Math.min(150, Math.max(1, parseInt(numMatch[0], 10))))
+        }
+
+        // Parse location
+        const lower = transcript.toLowerCase()
+        if (lower.includes('wayanad')) setLocation('Wayanad Hillside Settlement')
+        else if (lower.includes('mumbai')) setLocation('Mumbai Sector 4 Coastal Zone')
+        else if (lower.includes('bridge')) setLocation('Bridge River Crossing Breach')
+        else if (lower.includes('embankment') || lower.includes('river')) setLocation('Embankment Flood Overflow')
+        else if (transcript.trim().length > 3) setLocation(transcript.trim())
+
+        // Auto orchestrate after 1s
+        setTimeout(() => {
+          handleOrchestrate()
+        }, 1000)
+      }
+
+      recognition.onerror = (event) => {
+        console.warn('Voice control error:', event.error)
+        setIsListening(false)
+        setVoiceFeedback('Voice recognition ended. Click mic to try again.')
+      }
+
+      recognition.onend = () => {
+        setIsListening(false)
+      }
+
+      recognition.start()
+    } catch (e) {
+      console.error(e)
+      setIsListening(false)
+    }
+  }
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0]
@@ -250,9 +321,33 @@ export default function CommanderPage() {
                 </div>
               </div>
 
-              {/* Location Input */}
-              <div className="space-y-1 pt-1">
-                <label className="text-xs text-slate-400 font-mono">Incident Target Sector:</label>
+              {/* Location Input & Voice Assistant Trigger */}
+              <div className="space-y-1 pt-1 font-mono text-xs">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-400">Incident Target Sector:</label>
+                  <button
+                    type="button"
+                    onClick={handleVoiceControl}
+                    className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold flex items-center space-x-1.5 transition-all ${
+                      isListening
+                        ? 'bg-rose-950 border-rose-500 text-rose-300 animate-pulse shadow-[0_0_12px_rgba(244,63,94,0.4)]'
+                        : 'bg-purple-950/60 border-purple-500/50 text-purple-300 hover:bg-purple-900'
+                    }`}
+                    title="Speak commands e.g. 'Orchestrate Wayanad Sector with 26 victims'"
+                  >
+                    {isListening ? (
+                      <>
+                        <MicOff className="w-3.5 h-3.5 text-rose-400 animate-bounce" />
+                        <span>LISTENING...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="w-3.5 h-3.5 text-purple-400" />
+                        <span>🎙️ VOICE COMMAND</span>
+                      </>
+                    )}
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={location}
@@ -262,6 +357,11 @@ export default function CommanderPage() {
                   }}
                   className="w-full bg-slate-950/80 border border-slate-700 focus:border-purple-500 rounded-lg px-4 py-2.5 text-xs text-slate-100 font-mono"
                 />
+                {voiceFeedback && (
+                  <p className="text-[10px] font-mono text-purple-300 pt-0.5 animate-pulse">
+                    {voiceFeedback}
+                  </p>
+                )}
               </div>
 
               {/* Local Image/PDF/Video File Upload */}
@@ -323,6 +423,55 @@ export default function CommanderPage() {
                   <span>{error}</span>
                 </div>
               )}
+            </div>
+
+            {/* INFRASTRUCTURE CASCADING FAILURE TOPOLOGY MATRIX */}
+            <div className="glass-panel p-5 rounded-xl border border-amber-500/40 bg-amber-950/10 space-y-3 font-mono text-xs shadow-md">
+              <div className="flex items-center justify-between border-b border-amber-500/30 pb-2.5">
+                <div className="flex items-center space-x-2">
+                  <Zap className="w-4 h-4 text-amber-400 animate-pulse" />
+                  <h3 className="text-xs font-bold text-slate-100 uppercase tracking-wide">
+                    Infrastructure Cascading Failure Matrix
+                  </h3>
+                </div>
+                <span className="px-2 py-0.5 text-[9px] bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded font-bold">
+                  4 NODES MONITORED
+                </span>
+              </div>
+
+              <div className="space-y-2 text-[10px]">
+                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-rose-500/50 flex items-center justify-between">
+                  <div>
+                    <span className="text-slate-400 block">⚡ PRIMARY NODE: POWER SUBSTATION DELTA-4</span>
+                    <span className="text-rose-400 font-bold">SUBMERGED / OFFLINE</span>
+                  </div>
+                  <span className="px-2 py-0.5 bg-rose-950 text-rose-300 rounded font-bold">CRITICAL</span>
+                </div>
+
+                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-amber-500/50 flex items-center justify-between">
+                  <div>
+                    <span className="text-slate-400 block">🚰 SECONDARY NODE: WATER TREATMENT PLANT 2</span>
+                    <span className="text-amber-300 font-bold">DEGRADED (85% INUNDATED)</span>
+                  </div>
+                  <span className="px-2 py-0.5 bg-amber-950 text-amber-300 rounded font-bold">HIGH RISK</span>
+                </div>
+
+                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-cyan-500/50 flex items-center justify-between">
+                  <div>
+                    <span className="text-slate-400 block">📡 TERTIARY NODE: CELLULAR BASE STATION B</span>
+                    <span className="text-cyan-300 font-bold">BACKUP BATTERY (3.5h REMAINING)</span>
+                  </div>
+                  <span className="px-2 py-0.5 bg-cyan-950 text-cyan-300 rounded font-bold">MONITORING</span>
+                </div>
+
+                <div className="p-2.5 rounded-lg bg-slate-900/90 border border-emerald-500/50 flex items-center justify-between">
+                  <div>
+                    <span className="text-slate-400 block">🏥 QUATERNARY NODE: REGIONAL TRAUMA HOSPITAL</span>
+                    <span className="text-emerald-300 font-bold">DIESEL GENERATORS ACTIVE</span>
+                  </div>
+                  <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 rounded font-bold">STABLE</span>
+                </div>
+              </div>
             </div>
           </div>
 
