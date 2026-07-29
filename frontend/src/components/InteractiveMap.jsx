@@ -130,26 +130,71 @@ export default function InteractiveMap() {
     setIsClient(true)
   }, [])
 
-  // Handle City Search & Map FlyTo
-  const handleSearch = (e) => {
+  const [isSearching, setIsSearching] = useState(false)
+
+  // Handle City Search & Map FlyTo with Real Geocoding Lookup
+  const handleSearch = async (e) => {
     e.preventDefault()
     if (!searchQuery.trim()) return
     const key = searchQuery.trim().toLowerCase()
-    
-    // Check if city exists in predefined coords or create dynamic entry
-    let targetCoords = cityCoordinates[key]
+    setIsSearching(true)
+
+    let targetCoords = null
+    let resolvedName = searchQuery.trim()
+
+    // 1. Check predefined dictionary
+    if (cityCoordinates[key]) {
+      targetCoords = cityCoordinates[key]
+    }
+
+    // 2. Perform Real Dynamic Geocoding via Nominatim API
     if (!targetCoords) {
-      // Default to offsets if unknown city
-      targetCoords = [20.5937 + (Math.random() - 0.5) * 5, 78.9629 + (Math.random() - 0.5) * 5]
+      try {
+        const query = encodeURIComponent(searchQuery.trim())
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`)
+        if (res.ok) {
+          const data = await res.json()
+          if (data && data.length > 0) {
+            targetCoords = [parseFloat(data[0].lat), parseFloat(data[0].lon)]
+            resolvedName = data[0].display_name
+          }
+        }
+      } catch (err) {
+        console.warn('Nominatim geocoding error:', err)
+      }
+    }
+
+    // 3. Fallback to Open-Meteo Geocoding API if Nominatim missed
+    if (!targetCoords) {
+      try {
+        const res2 = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchQuery.trim())}&count=1&language=en&format=json`)
+        if (res2.ok) {
+          const data2 = await res2.json()
+          if (data2.results && data2.results.length > 0) {
+            const item = data2.results[0]
+            targetCoords = [item.latitude, item.longitude]
+            resolvedName = `${item.name}${item.admin1 ? ', ' + item.admin1 : ''}${item.country ? ', ' + item.country : ''}`
+          }
+        }
+      } catch (err2) {
+        console.warn('Open-Meteo geocoding error:', err2)
+      }
+    }
+
+    // Default fallback if unknown
+    if (!targetCoords) {
+      targetCoords = [19.0760, 72.8777]
     }
 
     setMapCenter(targetCoords)
-    setMapZoom(11)
+    setMapZoom(12)
+    setIsSearching(false)
 
-    // Add new location dynamically to map markers
+    // Add new location dynamically to map markers with exact real coordinates
+    const displayName = resolvedName.length > 35 ? resolvedName.substring(0, 35) + '...' : resolvedName
     const newLoc = {
       id: Date.now(),
-      name: `${searchQuery.toUpperCase()} Disaster Sector`,
+      name: displayName,
       lat: targetCoords[0],
       lng: targetCoords[1],
       risk: "EXTREME",
@@ -238,7 +283,7 @@ export default function InteractiveMap() {
             type="submit"
             className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-xs font-bold shadow-md transition-all flex items-center space-x-1"
           >
-            <span>FlyTo</span>
+            <span>{isSearching ? 'Locating...' : 'FlyTo'}</span>
           </button>
         </form>
 
