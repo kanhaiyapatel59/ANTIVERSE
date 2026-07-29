@@ -1,5 +1,5 @@
-import React from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import { SidebarProvider } from './context/SidebarContext'
 import { ThemeProvider } from './context/ThemeContext'
@@ -25,8 +25,30 @@ axios.defaults.baseURL = 'http://localhost:8000'
 
 export default function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isLandingPage = location.pathname === '/';
 
+  // Redirect to Landing Page ('/') whenever browser page is refreshed/reloaded
+  useEffect(() => {
+    const navEntries = performance.getEntriesByType('navigation');
+    const isPerformanceReload = navEntries.length > 0 && navEntries[0].type === 'reload';
+    const isLegacyReload = window.performance && window.performance.navigation && window.performance.navigation.type === 1;
+    const isSessionReload = sessionStorage.getItem('page_reloaded_flag') === 'true';
+
+    if ((isPerformanceReload || isLegacyReload || isSessionReload) && window.location.pathname !== '/') {
+      sessionStorage.removeItem('page_reloaded_flag');
+      navigate('/', { replace: true });
+    }
+
+    const handleBeforeUnload = () => {
+      sessionStorage.setItem('page_reloaded_flag', 'true');
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [navigate]);
 
   return (
     <AuthProvider>
