@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import axios from 'axios'
 import { generateCivilianSOSQRCode } from '../utils/qrGenerator'
+import ResourceInventoryChart from '../components/ResourceInventoryChart'
 
 export default function ResourceAgentPage() {
   const { sidebarOpen } = useSidebar()
@@ -319,6 +320,9 @@ export default function ResourceAgentPage() {
                         />
                       </div>
                     </div>
+
+                    {/* Relief Supply Inventory Allocation Bar Chart */}
+                    <ResourceInventoryChart peopleCount={peopleCount} />
 
                     {/* Inventory Allocation Grid (4 Cards) */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

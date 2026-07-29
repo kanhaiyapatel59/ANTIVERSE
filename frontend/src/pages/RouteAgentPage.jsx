@@ -19,6 +19,8 @@ import {
   Truck
 } from 'lucide-react'
 import axios from 'axios'
+import RouteFlowChart from '../components/RouteFlowChart'
+import GISMap from '../components/GISMap'
 
 export default function RouteAgentPage() {
   const { sidebarOpen } = useSidebar()
@@ -296,18 +298,33 @@ export default function RouteAgentPage() {
                         </span>
                       </div>
 
-                      {/* Calculated ETA */}
+                      {/* Estimated ETA */}
                       <div className="glass-panel p-5 rounded-xl border border-slate-800 flex items-center justify-between">
                         <div>
-                          <p className="text-[10px] font-mono text-slate-400 uppercase">Estimated Time of Arrival</p>
-                          <p className="text-lg font-bold text-cyan-300 font-mono mt-1">
-                            {result.eta}
+                          <p className="text-[10px] font-mono text-slate-400 uppercase">Estimated Rapid ETA</p>
+                          <p className="text-2xl font-bold text-cyan-300 font-mono mt-1">
+                            {result.eta_minutes} Mins
                           </p>
                         </div>
                         <div className="p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
                           <Clock className="w-6 h-6" />
                         </div>
                       </div>
+                    </div>
+
+                    {/* Tactical Transit Flow Pipeline Chart */}
+                    <RouteFlowChart 
+                      rescueTeam={result.best_rescue_team} 
+                      eta={`${result.eta_minutes} mins`} 
+                      corridor={result.tactical_route} 
+                    />
+
+                    {/* Live GIS Satellite Route Map */}
+                    <div className="space-y-2">
+                      <span className="text-xs font-mono font-bold text-emerald-300 uppercase">
+                        🗺️ Live Satellite Transit Route & Waypoint Corridor
+                      </span>
+                      <GISMap locationName={location} rescueTeam={result.best_rescue_team} />
                     </div>
 
                     {/* Step-by-Step Waypoint Transit Corridor Visualizer */}
