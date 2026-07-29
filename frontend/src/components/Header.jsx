@@ -23,8 +23,6 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
   const [showAlertsDrawer, setShowAlertsDrawer] = useState(false)
   const [showThemeDropdown, setShowThemeDropdown] = useState(false)
   const [showRoleDropdown, setShowRoleDropdown] = useState(false)
-  const [isAutonomousActive, setIsAutonomousActive] = useState(false)
-  const [autonomousToast, setAutonomousToast] = useState('')
   const { role: currentRole, setRole } = useAuth()
   const { sidebarOpen, toggleSidebar, meshMode, toggleMeshMode } = useSidebar()
   const { theme, setTheme, themes } = useTheme()
@@ -216,10 +214,6 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
         <h2 className="text-xs md:text-sm font-bold tracking-wider text-slate-100 uppercase font-orbitron truncate">
           {title}
         </h2>
-        <span className="hidden xl:inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-mono bg-cyan-950/80 text-cyan-300 border border-cyan-500/40 font-bold shadow-[0_0_10px_rgba(6,182,212,0.3)]">
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-          <span>SATELLITE SYNC: ACTIVE</span>
-        </span>
       </div>
 
       {/* RIGHT SECTION: PROMINENT THEME SWITCHER BUTTON + Satellite Mesh Toggle + Voice Mic + RBAC Badge */}
@@ -262,37 +256,6 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
                   </button>
                 ))}
               </div>
-            </div>
-          )}
-        </div>
-        
-        {/* AUTONOMOUS BACKGROUND AGENT MONITOR BUTTON */}
-        <div className="relative">
-          <button
-            onClick={() => {
-              const nextState = !isAutonomousActive
-              setIsAutonomousActive(nextState)
-              setAutonomousToast(nextState ? '🤖 Autonomous Monitor ACTIVATED' : '⏹️ Autonomous Monitor STOPPED')
-              setTimeout(() => setAutonomousToast(''), 3500)
-              // Endpoints removed — UI-only demo toggle
-            }}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border transition-all cursor-pointer font-sans text-xs font-bold ${
-              isAutonomousActive 
-                ? 'bg-rose-950/80 border-rose-500 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.4)] animate-pulse'
-                : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700 hover:border-rose-800'
-            }`}
-            title="Toggle Autonomous Event Monitoring & Self-Triggering Loop"
-          >
-            <Zap className={`w-3.5 h-3.5 ${isAutonomousActive ? 'text-rose-400 animate-spin' : 'text-slate-500'}`} />
-            <span className="font-mono text-[11px] uppercase">
-              {isAutonomousActive ? '🤖 AUTONOMOUS ACTIVE' : '🤖 START AUTONOMOUS'}
-            </span>
-          </button>
-
-          {/* Toast Notification */}
-          {autonomousToast && (
-            <div className="absolute top-12 right-0 z-50 whitespace-nowrap px-3 py-2 rounded-xl border text-[11px] font-mono font-bold shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200 bg-slate-900 border-rose-500/60 text-rose-300">
-              {autonomousToast}
             </div>
           )}
         </div>
