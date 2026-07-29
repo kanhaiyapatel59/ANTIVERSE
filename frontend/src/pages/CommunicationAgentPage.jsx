@@ -144,6 +144,7 @@ export default function CommunicationAgentPage() {
         prediction: payloadData.prediction,
         route: payloadData.route,
         resource: payloadData.resource
+      }, { timeout: 3000 })
       const resData = response.data
       setResult(resData)
       const locName = payloadData.location || location
