@@ -144,18 +144,31 @@ export default function CommunicationAgentPage() {
         prediction: payloadData.prediction,
         route: payloadData.route,
         resource: payloadData.resource
-      }, { timeout: 3000 })
-      const activeResult = response.data
-      setResult(activeResult)
-      
-      try {
-        await axios.post('/api/v1/whatsapp/auto-send', {
-          group_name: targetWhatsappGroup || 'NDRF',
-          message: activeResult.whatsapp_alert || activeResult.sms_alert
-        })
-      } catch (e) {
-        console.warn('Backend WhatsApp auto-send endpoint notice:', e)
-      }
+      const resData = response.data
+      setResult(resData)
+      const locName = payloadData.location || location
+      const waMsg = `🚨 *GROUP: ${(targetWhatsappGroup || 'NDRF').toUpperCase()} DISPATCH FORCE* 🚨\n\n${resData.whatsapp_alert || resData.sms_alert}\n\n📍 Target Sector: ${locName}\n⚠️ Status: CRITICAL DISPATCH ACTIVE\n[Sent via NDRF AI Disaster Command Center]`
+
+      // DISPATCH 1: Auto-Launch WhatsApp Web with pre-loaded alert
+      setTimeout(() => {
+        let targetUrl = `https://wa.me/?text=${encodeURIComponent(waMsg)}`
+        if (targetWhatsappGroup.startsWith('http')) {
+          targetUrl = targetWhatsappGroup
+        } else if (targetWhatsappGroup.startsWith('+') || /^\d+$/.test(targetWhatsappGroup)) {
+          const cleanNum = targetWhatsappGroup.replace(/[^\d]/g, '')
+          targetUrl = `https://wa.me/${cleanNum}?text=${encodeURIComponent(waMsg)}`
+        }
+        window.open(targetUrl, '_blank')
+      }, 400)
+
+      // DISPATCH 2: Auto-Launch Gmail Web Composer directly to patelkanhaiya916@gmail.com
+      setTimeout(() => {
+        const targetEmail = resData.target_email || 'patelkanhaiya916@gmail.com'
+        const mailSubject = `🚨 NDRF EMERGENCY DISPATCH BRIEFING: ${locName.toUpperCase()} [CRITICAL]`
+        const mailBody = resData.email_alert || resData.incident_report
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`
+        window.open(gmailUrl, '_blank')
+      }, 1000)
     } catch (err) {
       console.warn("⚠️ Backend call timed out or offline, using high-speed communication fallback:", err)
       const fallbackComm = {
@@ -183,6 +196,21 @@ export default function CommunicationAgentPage() {
         }
       }
       setResult(fallbackComm)
+
+      const locName = payloadData.location || location
+      const waMsg = `🚨 *GROUP: ${(targetWhatsappGroup || 'NDRF').toUpperCase()} DISPATCH FORCE* 🚨\n\n${fallbackComm.whatsapp_alert || fallbackComm.sms_alert}\n\n📍 Target Sector: ${locName}\n⚠️ Status: CRITICAL DISPATCH ACTIVE\n[Sent via NDRF AI Disaster Command Center]`
+
+      setTimeout(() => {
+        let targetUrl = `https://wa.me/?text=${encodeURIComponent(waMsg)}`
+        window.open(targetUrl, '_blank')
+      }, 400)
+
+      setTimeout(() => {
+        const mailSubject = `🚨 NDRF EMERGENCY DISPATCH BRIEFING: ${locName.toUpperCase()} [CRITICAL]`
+        const mailBody = fallbackComm.email_alert || fallbackComm.incident_report
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=patelkanhaiya916@gmail.com&su=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`
+        window.open(gmailUrl, '_blank')
+      }, 1000)
     } finally {
       setLoading(false)
     }
@@ -373,7 +401,7 @@ export default function CommunicationAgentPage() {
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  <span>🇮🇳 Hindi Alert</span>
+                  <span>📢 Alert</span>
                 </button>
 
                 <button
@@ -610,20 +638,20 @@ export default function CommunicationAgentPage() {
                     <div className="glass-panel p-6 rounded-xl border border-rose-500/40 space-y-4">
                       <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                         <h3 className="text-xs font-bold font-mono text-rose-300 uppercase">
-                          🇮🇳 Regional Language Public Alert (Hindi Broadcast)
+                          📢 Emergency Public Alert
                         </h3>
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handlePlayLiveBroadcast(result.hindi_alert || result.emergency_broadcast, true)}
                             className="text-[10px] font-mono px-2.5 py-1 rounded bg-rose-950 border border-rose-500 text-rose-300 hover:bg-rose-900"
                           >
-                            ▶ Speak Hindi Audio
+                            ▶ Speak Alert Audio
                           </button>
                           <button
                             onClick={() => copyToClipboard(result.hindi_alert)}
                             className="text-[10px] font-mono px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-cyan-400 hover:border-cyan-500"
                           >
-                            COPY HINDI
+                            COPY ALERT
                           </button>
                         </div>
                       </div>
