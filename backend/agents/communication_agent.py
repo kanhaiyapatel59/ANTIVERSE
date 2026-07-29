@@ -27,11 +27,17 @@ async def run_communication_agent(input_data: CommunicationInput, incident_id: s
 
     report = comm_data.get("incident_report", "")
     sms = comm_data.get("sms_alert", "")
+    whatsapp = comm_data.get("whatsapp_alert", "")
+    telegram = comm_data.get("telegram_alert", "")
+    twitter = comm_data.get("twitter_alert", "")
     email = comm_data.get("email_alert", "")
     broadcast = comm_data.get("emergency_broadcast", "")
     authority = comm_data.get("authority_report", "")
     hindi = comm_data.get("hindi_alert", "")
     pa_script = comm_data.get("pa_audio_script", "")
+    ham_radio = comm_data.get("ham_radio_script", "")
+    govt_webhook = comm_data.get("government_webhook_payload", {})
+    regional_alerts = comm_data.get("regional_language_alerts", {})
     cap_json = comm_data.get("cap_json_payload", {})
 
     # Step 2: Groq LLM (5s timeout)
@@ -72,11 +78,17 @@ async def run_communication_agent(input_data: CommunicationInput, incident_id: s
     output = CommunicationOutput(
         incident_report=report,
         sms_alert=sms,
+        whatsapp_alert=whatsapp,
+        telegram_alert=telegram,
+        twitter_alert=twitter,
         email_alert=email,
         emergency_broadcast=broadcast,
         authority_report=authority,
         hindi_alert=hindi,
         pa_audio_script=pa_script,
+        ham_radio_script=ham_radio,
+        government_webhook_payload=govt_webhook,
+        regional_language_alerts=regional_alerts,
         cap_json_payload=cap_json,
         timestamp=datetime.utcnow().isoformat()
     )

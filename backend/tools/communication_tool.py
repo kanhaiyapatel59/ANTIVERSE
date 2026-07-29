@@ -44,6 +44,12 @@ TACTICAL DISPATCH DIRECTIVE:
 
 IMMEDIATE COMMAND CENTER DISPATCH ACTIVE."""
 
+    # 2b. Telegram Public Channel Broadcast
+    telegram_text = f"🚨 **NDRF DISASTER COMMAND TELEGRAM CHANNEL** 🚨\n\n**SECTOR**: {loc.upper()}\n**SEVERITY**: {severity}\n\n⚠️ **SITUATION**: {people} victims detected. Water rise: {water_rise}.\n🧭 **RESCUE SQUAD**: Dispatched {team} (ETA: {eta}).\n🏢 **RELIEF CAMP**: Proceed to {shelter} ({beds} beds available).\n\n Stay tuned for live satellite updates."
+
+    # 2c. Twitter / X Emergency Broadcast (< 280 chars)
+    twitter_text = f"🚨 EMERGENCY ALERT [{severity}]: Flash flood active in {loc}. Water rising {water_rise}. #NDRF force ({team}) deployed (ETA {eta}). All residents evacuate to {shelter} immediately! #DisasterRelief #NDRFDisasterAlert"
+
     # 3. Formal Email Alert for patelkanhaiya916@gmail.com & NDRF Command HQ
     email_subject = f"🚨 EMERGENCY DISPATCH BRIEFING: {loc.upper()} [{severity}]"
     email_text = f"""TO: {TARGET_PATEL_EMAIL}
@@ -78,16 +84,46 @@ TIMESTAMP: {datetime.utcnow().isoformat()}"""
     # 4. Emergency Broadcast
     broadcast_text = f"📢 EMERGENCY BROADCAST WARNING: Severe flash flooding active in {loc}. Water levels projected to rise {water_rise}. All residents must immediately move to high ground or proceed to {shelter}. Emergency rescue team ({team}) deployed. Stay off flooded roadways!"
 
-    # 5. Hindi Regional Alert
+    # 5. Multi-Language Regional Emergency Alerts
     hindi_alert = f"🚨 आपातकालीन चेतावनी [{severity}]: {loc} में तीव्र बाढ़ की स्थिति। जल स्तर में {water_rise} की वृद्धि। बचाव दल {team} (ETA {eta}) तैनात। तुरंत उच्च स्थान या {shelter} की ओर जाएं।"
+    marathi_alert = f"🚨 आपत्कालीन इशारा [{severity}]: {loc} मध्ये तीव्र पूर परिस्थिती. पाण्याची पातळी {water_rise} वाढणार. एनडीआरएफ पथक {team} (ETA {eta}) तैनात. लगेच उच्च ठिकाणी किंवा {shelter} येथे जा."
+    bengali_alert = f"🚨 জরুরী সতর্কবার্তা [{severity}]: {loc} এলাকায় তীব্র বন্যার পূর্বাভাস। জলস্তর {water_rise} বৃদ্ধি পাচ্ছে। উদ্ধারকারী দল {team} (ETA {eta}) রওনা হয়েছে। অবিলম্বে {shelter} এ আশ্রয় নিন।"
+    tamil_alert = f"🚨 அவசர எச்சரிக்கை [{severity}]: {loc} பகுதியில் தீவிர வெள்ளப்பெருக்கு. நீர்மட்டம் {water_rise} உயர்கிறது. மீட்புக் குழு {team} (ETA {eta}) விரைந்துள்ளது. உடனே {shelter} முகாமிற்குச் செல்லவும்."
+    malayalam_alert = f"🚨 അടിയന്തര മുന്നറിയിപ്പ് [{severity}]: {loc} പ്രദേശത്ത് രൂക്ഷമായ വെള്ളപ്പൊക്കം. വെള്ളം {water_rise} ഉയരുന്നു. രക്ഷാസേന {team} (ETA {eta}) പുറപ്പെട്ടു. ഉടൻ {shelter} ക്യാമ്പിലേക്ക് മാറുക."
+
+    regional_alerts = {
+        "Hindi": hindi_alert,
+        "Marathi": marathi_alert,
+        "Bengali": bengali_alert,
+        "Tamil": tamil_alert,
+        "Malayalam": malayalam_alert
+    }
 
     # 6. Ground PA System Script
     pa_script = f"Attention all residents of {loc}. This is an urgent emergency announcement from NDRF Command. Flood waters are rising at {water_rise}. Please remain calm and evacuate to {shelter} immediately. Rescue boats and rescue force {team} are arriving in {eta}. Move children, elderly, and animals to upper floors now."
 
-    # 7. Executive Briefing
+    # 7. Emergency Ham Radio / Walkie-Talkie Script
+    ham_radio_script = f"MAYDAY MAYDAY MAYDAY. THIS IS NDRF COMMAND SECTOR 4 TO ALL FIELD STATIONS. INCIDENT LOCATION: {loc.upper()}. SEVERITY: {severity}. VICTIM COUNT: {people} HUMANS. WATER SURGE: {water_rise}. DISPATCHED UNIT: {team} ETA {eta}. ALL FREQUENCIES REPEAT AGAIN. OVER AND OUT."
+
+    # 8. Government Webhook Push Payload
+    govt_webhook_payload = {
+        "event_id": f"NDRF-GOVT-PUSH-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
+        "disaster_type": "FLASH_FLOOD",
+        "severity_level": severity,
+        "sector_location": loc,
+        "human_victims": people,
+        "hydro_surge_estimate": water_rise,
+        "assigned_force": team,
+        "eta_minutes": eta,
+        "designated_shelter": shelter,
+        "capacity_beds": beds,
+        "timestamp_utc": datetime.utcnow().isoformat()
+    }
+
+    # 9. Executive Briefing
     authority_text = f"EXECUTIVE BRIEFING: Incident at {loc} rated {severity}. {people} victims & {animals} animals detected with {rainfall} active. Hydro modeling predicts {water_rise}. Dispatched {team} (ETA {eta}) to escort evacuees to {shelter} with {boats} rescue boats and {beds} beds assigned."
 
-    # 8. Full Incident Report
+    # 10. Full Incident Report
     incident_report = f"COMPREHENSIVE DISASTER RESPONSE PLAN FOR {loc.upper()}\n\n" \
                       f"• TARGET RECIPIENT: {TARGET_PATEL_EMAIL}\n" \
                       f"• METEOROLOGY: {rainfall}\n" \
@@ -96,7 +132,7 @@ TIMESTAMP: {datetime.utcnow().isoformat()}"""
                       f"• TACTICAL ROUTE: Dispatched {team} with ETA {eta}.\n" \
                       f"• LOGISTICS: Reserved {shelter} with {beds} beds and {boats} boats."
 
-    # 9. CAP JSON Payload
+    # CAP JSON Payload
     cap_json = {
         "identifier": f"CAP-DISASTER-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
         "sender": "NDRF_COMMAND_CENTER@gov.in",
@@ -124,12 +160,17 @@ TIMESTAMP: {datetime.utcnow().isoformat()}"""
         "incident_report": incident_report,
         "sms_alert": sms_text,
         "whatsapp_alert": whatsapp_text,
+        "telegram_alert": telegram_text,
+        "twitter_alert": twitter_text,
         "email_alert": email_text,
         "target_email": TARGET_PATEL_EMAIL,
         "email_status": email_status,
         "emergency_broadcast": broadcast_text,
         "hindi_alert": hindi_alert,
+        "regional_language_alerts": regional_alerts,
         "pa_audio_script": pa_script,
+        "ham_radio_script": ham_radio_script,
+        "government_webhook_payload": govt_webhook_payload,
         "authority_report": authority_text,
         "cap_json_payload": cap_json
     }

@@ -112,11 +112,17 @@ class CommunicationInput(BaseModel):
 class CommunicationOutput(BaseModel):
     incident_report: str = Field(..., description="Comprehensive Situational Assessment Report")
     sms_alert: str = Field(..., description="Concise SMS notice for field teams")
+    whatsapp_alert: str = Field(default="", description="WhatsApp formatted group dispatch notice")
+    telegram_alert: str = Field(default="", description="Telegram channel public broadcast post")
+    twitter_alert: str = Field(default="", description="Twitter/X emergency alert 280-char broadcast")
     email_alert: str = Field(..., description="Formal email update for District Collector / NDRF HQ")
     emergency_broadcast: str = Field(..., description="Public alert broadcast message")
     authority_report: str = Field(..., description="High-level executive briefing for control room")
     hindi_alert: str = Field(default="", description="Hindi translation of public broadcast alert")
     pa_audio_script: str = Field(default="", description="Loudspeaker announcement script for ground teams")
+    ham_radio_script: str = Field(default="", description="Ham Radio walkie-talkie emergency transmission script")
+    government_webhook_payload: Dict[str, Any] = Field(default_factory=dict, description="Disaster Management Authority Push Webhook payload")
+    regional_language_alerts: Dict[str, str] = Field(default_factory=dict, description="Multi-language alert dictionary (Hindi, Marathi, Bengali, Tamil, Malayalam)")
     cap_json_payload: Dict[str, Any] = Field(default_factory=dict, description="Common Alerting Protocol (CAP) v1.2 standard output")
     timestamp: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
 
