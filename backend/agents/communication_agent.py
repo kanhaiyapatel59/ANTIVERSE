@@ -34,7 +34,7 @@ async def run_communication_agent(input_data: CommunicationInput, incident_id: s
     pa_script = comm_data.get("pa_audio_script", "")
     cap_json = comm_data.get("cap_json_payload", {})
 
-    # Step 2: Groq LPU LLM Synthesis for Report Refinement
+    # Step 2: Groq LLM (5s timeout)
     groq_key = os.getenv("GROQ_API_KEY", "")
     if groq_key and groq_key not in ["your_groq_api_key_here", "mock_groq_key"]:
         try:
@@ -44,14 +44,14 @@ async def run_communication_agent(input_data: CommunicationInput, incident_id: s
                 temperature=0.2
             )
             prompt = build_communication_prompt(loc, comm_data)
-            response = await llm.ainvoke([("system", COMMUNICATION_SYSTEM_PROMPT), ("user", prompt)])
+            response = await asyncio.wait_for(llm.ainvoke([("system", COMMUNICATION_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
             refined = response.content.strip()
             if len(refined) > 30:
                 report = refined
         except Exception as e:
-            print(f"⚠️ Groq LLM invocation failed ({e}), trying Gemini fallback...")
+            print(f"⚠️ Groq LLM invocation timed out or failed ({e}), trying Gemini fallback...")
 
-    # Step 3: Gemini Fallback
+    # Step 3: Gemini Fallback (5s timeout)
     if report == comm_data.get("incident_report", ""):
         gemini_key = os.getenv("GEMINI_API_KEY", "")
         if gemini_key and gemini_key not in ["your_gemini_api_key_here", "mock_gemini_key"]:
@@ -62,12 +62,12 @@ async def run_communication_agent(input_data: CommunicationInput, incident_id: s
                     temperature=0.2
                 )
                 prompt = build_communication_prompt(loc, comm_data)
-                response = await llm.ainvoke([("system", COMMUNICATION_SYSTEM_PROMPT), ("user", prompt)])
+                response = await asyncio.wait_for(llm.ainvoke([("system", COMMUNICATION_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
                 refined = response.content.strip()
                 if len(refined) > 30:
                     report = refined
             except Exception as e:
-                print(f"⚠️ Gemini LLM invocation failed ({e}), using deterministic reports...")
+                print(f"⚠️ Gemini LLM invocation timed out or failed ({e}), using deterministic reports...")
 
     output = CommunicationOutput(
         incident_report=report,

@@ -33,7 +33,7 @@ async def run_prediction_agent(input_data: PredictionInput, incident_id: str = N
 
     action_directive = ""
 
-    # Step 2: Groq LPU LLM Synthesis
+    # Step 2: Groq LLM (5s timeout)
     groq_key = os.getenv("GROQ_API_KEY", "")
     if groq_key and groq_key not in ["your_groq_api_key_here", "mock_groq_key"]:
         try:
@@ -43,12 +43,12 @@ async def run_prediction_agent(input_data: PredictionInput, incident_id: str = N
                 temperature=0.2
             )
             prompt = build_prediction_prompt(det_dict, wea_dict, hydro)
-            response = await llm.ainvoke([("system", PREDICTION_SYSTEM_PROMPT), ("user", prompt)])
+            response = await asyncio.wait_for(llm.ainvoke([("system", PREDICTION_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
             action_directive = response.content.strip()
         except Exception as e:
-            print(f"⚠️ Groq LLM invocation failed ({e}), trying Gemini fallback...")
+            print(f"⚠️ Groq LLM invocation timed out or failed ({e}), trying Gemini fallback...")
 
-    # Step 3: Gemini Fallback
+    # Step 3: Gemini Fallback (5s timeout)
     if not action_directive:
         gemini_key = os.getenv("GEMINI_API_KEY", "")
         if gemini_key and gemini_key not in ["your_gemini_api_key_here", "mock_gemini_key"]:
@@ -59,10 +59,10 @@ async def run_prediction_agent(input_data: PredictionInput, incident_id: str = N
                     temperature=0.2
                 )
                 prompt = build_prediction_prompt(det_dict, wea_dict, hydro)
-                response = await llm.ainvoke([("system", PREDICTION_SYSTEM_PROMPT), ("user", prompt)])
+                response = await asyncio.wait_for(llm.ainvoke([("system", PREDICTION_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
                 action_directive = response.content.strip()
             except Exception as e:
-                print(f"⚠️ Gemini LLM invocation failed ({e}), using deterministic action...")
+                print(f"⚠️ Gemini LLM invocation timed out or failed ({e}), using deterministic action...")
 
     # Step 4: Rule Fallback
     if not action_directive:

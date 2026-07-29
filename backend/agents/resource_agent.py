@@ -33,7 +33,9 @@ async def run_resource_agent(input_data: ResourceInput, incident_id: str = None)
 
     logistics_text = ""
 
-    # Step 2: Groq LPU Synthesis
+    import asyncio
+
+    # Step 2: Groq LLM (5s timeout)
     groq_key = os.getenv("GROQ_API_KEY", "")
     if groq_key and groq_key not in ["your_groq_api_key_here", "mock_groq_key"]:
         try:
@@ -43,12 +45,12 @@ async def run_resource_agent(input_data: ResourceInput, incident_id: str = None)
                 temperature=0.2
             )
             prompt = build_resource_prompt(count, loc, res)
-            response = await llm.ainvoke([("system", RESOURCE_SYSTEM_PROMPT), ("user", prompt)])
+            response = await asyncio.wait_for(llm.ainvoke([("system", RESOURCE_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
             logistics_text = response.content.strip()
         except Exception as e:
-            print(f"⚠️ Groq LLM invocation failed ({e}), trying Gemini fallback...")
+            print(f"⚠️ Groq LLM invocation timed out or failed ({e}), trying Gemini fallback...")
 
-    # Step 3: Gemini Fallback
+    # Step 3: Gemini Fallback (5s timeout)
     if not logistics_text:
         gemini_key = os.getenv("GEMINI_API_KEY", "")
         if gemini_key and gemini_key not in ["your_gemini_api_key_here", "mock_gemini_key"]:
@@ -59,10 +61,10 @@ async def run_resource_agent(input_data: ResourceInput, incident_id: str = None)
                     temperature=0.2
                 )
                 prompt = build_resource_prompt(count, loc, res)
-                response = await llm.ainvoke([("system", RESOURCE_SYSTEM_PROMPT), ("user", prompt)])
+                response = await asyncio.wait_for(llm.ainvoke([("system", RESOURCE_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
                 logistics_text = response.content.strip()
             except Exception as e:
-                print(f"⚠️ Gemini LLM invocation failed ({e}), using deterministic briefing...")
+                print(f"⚠️ Gemini LLM invocation timed out or failed ({e}), using deterministic briefing...")
 
     # Step 4: Rule Fallback
     if not logistics_text:

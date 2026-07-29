@@ -30,7 +30,9 @@ async def run_route_agent(input_data: RouteInput, incident_id: str = None) -> Ro
 
     dispatch_text = ""
 
-    # Step 2: Groq LPU Synthesis
+    import asyncio
+
+    # Step 2: Groq LLM (5s timeout)
     groq_key = os.getenv("GROQ_API_KEY", "")
     if groq_key and groq_key not in ["your_groq_api_key_here", "mock_groq_key"]:
         try:
@@ -40,12 +42,12 @@ async def run_route_agent(input_data: RouteInput, incident_id: str = None) -> Ro
                 temperature=0.2
             )
             prompt = build_route_prompt(loc, route_data)
-            response = await llm.ainvoke([("system", ROUTE_SYSTEM_PROMPT), ("user", prompt)])
+            response = await asyncio.wait_for(llm.ainvoke([("system", ROUTE_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
             dispatch_text = response.content.strip()
         except Exception as e:
-            print(f"⚠️ Groq LLM invocation failed ({e}), trying Gemini fallback...")
+            print(f"⚠️ Groq LLM invocation timed out or failed ({e}), trying Gemini fallback...")
 
-    # Step 3: Gemini Fallback
+    # Step 3: Gemini Fallback (5s timeout)
     if not dispatch_text:
         gemini_key = os.getenv("GEMINI_API_KEY", "")
         if gemini_key and gemini_key not in ["your_gemini_api_key_here", "mock_gemini_key"]:
@@ -56,10 +58,10 @@ async def run_route_agent(input_data: RouteInput, incident_id: str = None) -> Ro
                     temperature=0.2
                 )
                 prompt = build_route_prompt(loc, route_data)
-                response = await llm.ainvoke([("system", ROUTE_SYSTEM_PROMPT), ("user", prompt)])
+                response = await asyncio.wait_for(llm.ainvoke([("system", ROUTE_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
                 dispatch_text = response.content.strip()
             except Exception as e:
-                print(f"⚠️ Gemini LLM invocation failed ({e}), using deterministic route...")
+                print(f"⚠️ Gemini LLM invocation timed out or failed ({e}), using deterministic route...")
 
     # Step 4: Rule Fallback
     if not dispatch_text:

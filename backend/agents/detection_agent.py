@@ -33,7 +33,7 @@ async def run_detection_agent(input_data: DetectionInput, incident_id: str = Non
 
     briefing_text = ""
 
-    # Step 2: LLM Synthesis via Groq
+    # Step 2: Groq LLM (5s timeout)
     groq_key = os.getenv("GROQ_API_KEY", "")
     if groq_key and groq_key not in ["your_groq_api_key_here", "mock_groq_key"]:
         try:
@@ -43,12 +43,12 @@ async def run_detection_agent(input_data: DetectionInput, incident_id: str = Non
                 temperature=0.2
             )
             prompt = build_detection_prompt(people, animals, flood_pct, severity, damage, summary_hint, structures)
-            response = await llm.ainvoke([("system", DETECTION_SYSTEM_PROMPT), ("user", prompt)])
+            response = await asyncio.wait_for(llm.ainvoke([("system", DETECTION_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
             briefing_text = response.content.strip()
         except Exception as e:
-            print(f"⚠️ Groq LLM invocation failed ({e}), trying Gemini fallback...")
+            print(f"⚠️ Groq LLM invocation timed out or failed ({e}), trying Gemini fallback...")
 
-    # Step 3: Gemini Fallback
+    # Step 3: Gemini Fallback (5s timeout)
     if not briefing_text:
         gemini_key = os.getenv("GEMINI_API_KEY", "")
         if gemini_key and gemini_key not in ["your_gemini_api_key_here", "mock_gemini_key"]:
@@ -59,10 +59,10 @@ async def run_detection_agent(input_data: DetectionInput, incident_id: str = Non
                     temperature=0.2
                 )
                 prompt = build_detection_prompt(people, animals, flood_pct, severity, damage, summary_hint, structures)
-                response = await llm.ainvoke([("system", DETECTION_SYSTEM_PROMPT), ("user", prompt)])
+                response = await asyncio.wait_for(llm.ainvoke([("system", DETECTION_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
                 briefing_text = response.content.strip()
             except Exception as e:
-                print(f"⚠️ Gemini LLM invocation failed ({e}), using deterministic synthesis...")
+                print(f"⚠️ Gemini LLM invocation timed out or failed ({e}), using deterministic synthesis...")
 
     # Step 4: Rule Synthesis Fallback
     if not briefing_text:

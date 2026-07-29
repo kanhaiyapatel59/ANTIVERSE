@@ -136,7 +136,9 @@ async def synthesis_node(state: GraphState) -> Dict[str, Any]:
 
     master_plan = ""
 
-    # Synthesize Master Plan via Groq LPU
+    import asyncio
+
+    # Synthesize Master Plan via Groq LPU (5s timeout)
     groq_key = os.getenv("GROQ_API_KEY", "")
     if groq_key and groq_key not in ["your_groq_api_key_here", "mock_groq_key"]:
         try:
@@ -146,10 +148,10 @@ async def synthesis_node(state: GraphState) -> Dict[str, Any]:
                 temperature=0.2
             )
             prompt = build_commander_prompt(inc_id, loc, state)
-            response = await llm.ainvoke([("system", COMMANDER_SYSTEM_PROMPT), ("user", prompt)])
+            response = await asyncio.wait_for(llm.ainvoke([("system", COMMANDER_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
             master_plan = response.content.strip()
         except Exception as e:
-            print(f"⚠️ Groq LLM synthesis failed ({e}), trying Gemini...")
+            print(f"⚠️ Groq LLM synthesis timed out or failed ({e}), trying Gemini...")
 
     if not master_plan:
         gemini_key = os.getenv("GEMINI_API_KEY", "")
@@ -161,9 +163,10 @@ async def synthesis_node(state: GraphState) -> Dict[str, Any]:
                     temperature=0.2
                 )
                 prompt = build_commander_prompt(inc_id, loc, state)
-                response = await llm.ainvoke([("system", COMMANDER_SYSTEM_PROMPT), ("user", prompt)])
+                response = await asyncio.wait_for(llm.ainvoke([("system", COMMANDER_SYSTEM_PROMPT), ("user", prompt)]), timeout=5.0)
                 master_plan = response.content.strip()
             except Exception as e:
+                print(f"⚠️ Gemini LLM synthesis timed out or failed ({e})...")
                 print(f"⚠️ Gemini LLM synthesis failed ({e}), using fallback plan...")
 
     if not master_plan:
