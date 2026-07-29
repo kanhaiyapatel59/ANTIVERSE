@@ -120,6 +120,18 @@ function EarthGlobe() {
   const earthTexture = useMemo(() => createEarthTextures(), []);
   const cloudTexture = useMemo(() => createCloudTexture(), []);
 
+  // Dispose WebGL textures on unmount to release GPU memory & prevent context loss
+  useEffect(() => {
+    return () => {
+      try {
+        if (earthTexture) earthTexture.dispose();
+        if (cloudTexture) cloudTexture.dispose();
+      } catch (e) {
+        // Ignore dispose errors on unmount
+      }
+    };
+  }, [earthTexture, cloudTexture]);
+
   // Emergency Hotspots (Asia, Europe, Americas, Australia)
   const hotspots = useMemo(() => [
     { pos: [1.3, 0.8, 1.7], label: "SECTOR 4 FLOOD", color: "#ff0055" },
