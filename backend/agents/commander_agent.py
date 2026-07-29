@@ -47,7 +47,8 @@ class GraphState(TypedDict):
 # --- LANGGRAPH NODE FUNCTIONS ---
 
 async def weather_node(state: GraphState) -> Dict[str, Any]:
-    city = state["location"].split()[0]
+    loc_parts = state.get("location", "").strip().split()
+    city = loc_parts[0] if loc_parts else "Mumbai"
     inp = WeatherInput(city=city)
     out: WeatherOutput = await run_weather_agent(inp, incident_id=state["incident_id"])
     
@@ -128,11 +129,12 @@ async def communication_node(state: GraphState) -> Dict[str, Any]:
 async def synthesis_node(state: GraphState) -> Dict[str, Any]:
     inc_id = state["incident_id"]
     loc = state["location"]
+    logs = list(state.get("logs", []))
 
     # Autonomous Self-Correction & Safety Rule Validation Step
     corrected_state = validate_and_self_correct_plan(dict(state))
     for log in corrected_state.get("self_correction_logs", []):
-        state["logs"].append(log)
+        logs.append(log)
 
     master_plan = ""
 
