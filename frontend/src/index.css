@@ -65,6 +65,14 @@
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
+
+  .font-orbitron {
+    font-family: 'Orbitron', sans-serif;
+  }
+
+  .font-rajdhani {
+    font-family: 'Rajdhani', sans-serif;
+  }
 }
 
 /* Custom scrollbars */
@@ -89,24 +97,50 @@
 /* Mission Control HUD Background Grid */
 .bg-hud-grid {
   background-image: 
-    linear-gradient(to right, rgba(140, 130, 110, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(140, 130, 110, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
-/* Glassmorphism & Card Utilities */
+/* Sci-Fi Tactical Glassmorphism & Card Utilities */
 .glass-panel {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--card-shadow);
+  background-color: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
   color: var(--text-main);
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  border-color: rgba(147, 51, 234, 0.5);
+  box-shadow: 0 0 25px rgba(147, 51, 234, 0.25);
 }
 
 .glass-panel-glow {
-  background-color: var(--bg-surface-elevated);
-  border: 1px solid var(--accent-border);
-  box-shadow: 0 0 15px var(--accent-light);
+  background-color: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
   color: var(--text-main);
+}
+
+/* Neon Glow Shadow Utilities */
+.hud-glow-cyan {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+}
+
+.hud-glow-purple {
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+.hud-glow-rose {
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.4);
+}
+
+.hud-glow-amber {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
 }
 

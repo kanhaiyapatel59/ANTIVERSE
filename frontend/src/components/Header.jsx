@@ -216,10 +216,14 @@ export default function Header({ title = "Disaster Operations Dashboard" }) {
           )}
         </div>
 
-        <div className="h-4 w-1 bg-blue-600 rounded-full"></div>
-        <h2 className="text-xs md:text-sm font-bold tracking-wide text-[var(--text-main)] uppercase font-mono truncate">
+        <div className="h-4 w-1 bg-cyan-500 rounded-full shadow-[0_0_8px_#06b6d4]"></div>
+        <h2 className="text-xs md:text-sm font-bold tracking-wider text-slate-100 uppercase font-orbitron truncate">
           {title}
         </h2>
+        <span className="hidden xl:inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-mono bg-cyan-950/80 text-cyan-300 border border-cyan-500/40 font-bold shadow-[0_0_10px_rgba(6,182,212,0.3)]">
+          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+          <span>SATELLITE SYNC: ACTIVE</span>
+        </span>
       </div>
 
       {/* RIGHT SECTION: PROMINENT THEME SWITCHER BUTTON + Satellite Mesh Toggle + Voice Mic + RBAC Badge */}

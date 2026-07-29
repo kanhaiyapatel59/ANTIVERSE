@@ -265,10 +265,10 @@ export default function CommanderPage() {
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h1 className="text-xl font-bold text-slate-100 tracking-wide font-mono uppercase">
+                <h1 className="text-xl md:text-2xl font-bold text-slate-100 tracking-wider font-orbitron uppercase">
                   LangGraph Master Orchestrator
                 </h1>
-                <span className="px-2.5 py-0.5 text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded-full font-bold">
+                <span className="px-2.5 py-0.5 text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded-full font-bold shadow-[0_0_10px_rgba(168,85,247,0.3)]">
                   DAY 2 COMMANDER
                 </span>
               </div>
